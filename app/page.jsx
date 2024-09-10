@@ -29,7 +29,7 @@ const Login = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-70 lg:h-screen">
+    <div className="fixed inset-0 flex items-center justify-center bg-opacity-70 lg:h-screen">
       {/* Loading Spinner - Centers the loader in the middle of the screen */}
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
