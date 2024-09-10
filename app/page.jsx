@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+
 import toast, { Toaster } from "react-hot-toast"; // React Hot Toast
 import { HashLoader } from "react-spinners"; // Spinner for loading effect
 import Image from "next/image";
@@ -87,12 +87,6 @@ const Login = () => {
               Login
             </button>
           </form>
-          <div className="mt-4 text-center">
-            <p className="text-gray-600">Don't have an account?</p>
-            <Link href="/signup" className="text-blue-500 hover:underline">
-              Please Sign Up
-            </Link>
-          </div>
         </div>
 
         {/* Image Section for Medium+ Screens */}
