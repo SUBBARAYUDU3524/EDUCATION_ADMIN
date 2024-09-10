@@ -163,148 +163,151 @@ const ClassSubjectForm = () => {
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto mt-10  bg-black border rounded-lg shadow-xl text-white">
-      <Toaster position="top-right" />
-      {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
-          <ClipLoader color="#4A90E2" loading={loading} size={50} />
-        </div>
-      )}
-      <h2 className="text-3xl font-bold mb-4">Add Class</h2>
-      <form onSubmit={handleClassSubmit} className="space-y-6 mb-8">
-        <div>
-          <label className="block text-lg font-medium text-white">
-            Class Name:
-            <input
-              type="text"
-              value={className}
-              onChange={(e) => setClassName(e.target.value)}
-              required
-              className="mt-2 block w-full text-lg px-4 py-3 text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            />
-          </label>
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Add Class
-        </button>
-      </form>
+    <div>
+      <h1 className="text-3xl text-center mt-10 underline">10TH CLASS FORM</h1>
+      <div className="p-6 max-w-lg mx-auto mt-10  bg-black border rounded-lg shadow-xl text-white">
+        <Toaster position="top-right" />
+        {loading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-50">
+            <ClipLoader color="#4A90E2" loading={loading} size={50} />
+          </div>
+        )}
+        <h2 className="text-3xl font-bold mb-4">Add Class</h2>
+        <form onSubmit={handleClassSubmit} className="space-y-6 mb-8">
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Class Name:
+              <input
+                type="text"
+                value={className}
+                onChange={(e) => setClassName(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Add Class
+          </button>
+        </form>
 
-      <h2 className="text-3xl font-bold mb-4">Add Subject</h2>
-      <form onSubmit={handleSubjectSubmit} className="space-y-6 mb-8">
-        <div>
-          <label className="block text-lg font-medium text-white">
-            Select Class:
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              required
-              className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            >
-              <option value="">Select a class</option>
-              {classes.map((cls) => (
-                <option key={cls.id} value={cls.id}>
-                  {cls.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div>
-          <label className="block text-lg font-medium text-white">
-            Subject Name:
-            <input
-              type="text"
-              value={subjectName}
-              onChange={(e) => setSubjectName(e.target.value)}
-              required
-              className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            />
-          </label>
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Add Subject
-        </button>
-      </form>
+        <h2 className="text-3xl font-bold mb-4">Add Subject</h2>
+        <form onSubmit={handleSubjectSubmit} className="space-y-6 mb-8">
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Select Class:
+              <select
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              >
+                <option value="">Select a class</option>
+                {classes.map((cls) => (
+                  <option key={cls.id} value={cls.id}>
+                    {cls.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Subject Name:
+              <input
+                type="text"
+                value={subjectName}
+                onChange={(e) => setSubjectName(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Add Subject
+          </button>
+        </form>
 
-      <h2 className="text-3xl font-bold mb-4">Add Unit</h2>
-      <form onSubmit={handleUnitSubmit} className="space-y-6">
-        <div>
-          <label className="block text-lg font-medium text-white">
-            Select Subject:
-            <select
-              value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
-              required
-              className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            >
-              <option value="">Select a subject</option>
-              {subjects.map((sub) => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.subjectName}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div>
-          <label className="block text-lg font-medium text-white">
-            Unit Name:
-            <input
-              type="text"
-              value={unitName}
-              onChange={(e) => setUnitName(e.target.value)}
-              required
-              className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            />
-          </label>
-        </div>
-        <div>
-          <label className="block text-lg font-medium text-white">
-            Unit Number:
-            <input
-              type="text"
-              value={unitNumber}
-              onChange={(e) => setUnitNumber(e.target.value)}
-              required
-              className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            />
-          </label>
-        </div>
-        <div>
-          <label className="block text-lg font-medium text-white">
-            Unit Image:
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setUnitImage(e.target.files[0])}
-              className="mt-2 block w-full text-lg px-4 py-3 text-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            />
-          </label>
-        </div>
-        <div>
-          <label className="block text-lg font-medium text-white ">
-            Unit PDF:
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setUnitPdf(e.target.files[0])}
-              className="mt-2 block w-full text-lg text-white px-4 py-3  border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
-            />
-          </label>
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Add Unit
-        </button>
-      </form>
+        <h2 className="text-3xl font-bold mb-4">Add Unit</h2>
+        <form onSubmit={handleUnitSubmit} className="space-y-6">
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Select Subject:
+              <select
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              >
+                <option value="">Select a subject</option>
+                {subjects.map((sub) => (
+                  <option key={sub.id} value={sub.id}>
+                    {sub.subjectName}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Unit Name:
+              <input
+                type="text"
+                value={unitName}
+                onChange={(e) => setUnitName(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Unit Number:
+              <input
+                type="text"
+                value={unitNumber}
+                onChange={(e) => setUnitNumber(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Unit Image:
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setUnitImage(e.target.files[0])}
+                className="mt-2 block w-full text-lg px-4 py-3 text-white border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-white ">
+              Unit PDF:
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setUnitPdf(e.target.files[0])}
+                className="mt-2 block w-full text-lg text-white px-4 py-3  border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Add Unit
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

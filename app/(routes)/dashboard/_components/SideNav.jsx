@@ -71,7 +71,7 @@ const SideNav = () => {
     },
     {
       id: 4,
-      name: "ClassSubForm",
+      name: "SSC FORM",
       path: "/dashboard/classSubForm",
       icon: <FaEnvelope />,
     },
@@ -132,11 +132,11 @@ const SideNav = () => {
             alt="Logo"
             className="w-10 h-10"
           />
-          <span className="text-xl font-bold">Company Name</span>
+          <span className="text-sm font-bold">ERRTEKNALOZY</span>
         </div>
 
         {/* Navigation Menu */}
-        <ul className="mt-6 pl-10 pr-10 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0">
+        <ul className="mt-4 pl-10 pr-10 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0">
           {menuList.map((item) => (
             <li key={item.id} className="mb-4">
               <button

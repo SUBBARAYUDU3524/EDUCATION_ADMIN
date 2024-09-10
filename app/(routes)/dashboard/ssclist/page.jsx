@@ -240,296 +240,305 @@ const ClassSubjectList = () => {
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto mt-10 bg-black border rounded-lg shadow-tr">
-      <Toaster position="top-right" />
-      <h2 className="text-2xl font-bold mb-4">
-        Manage Classes, Subjects, and Units
-      </h2>
+    <div>
+      <h1 className="text-3xl text-center mt-10 underline">10TH CLASS LIST</h1>
 
-      {/* Class Selection and Display */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold">Classes</h3>
-        {loadingClasses ? (
-          <p>Loading classes...</p>
-        ) : (
-          classes.map((cls) => (
-            <div
-              key={cls.id}
-              className="flex justify-between items-center my-2"
-            >
-              <span>{cls.name}</span>
-              <div>
-                <button
-                  onClick={() =>
-                    handleEdit("class", cls.id, { name: cls.name })
-                  }
-                  className="text-blue-500 hover:bg-blue-100 px-3 py-1 rounded"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteClass(cls.id)}
-                  className="text-red-500 hover:bg-red-100 px-3 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      <div className="p-6 max-w-lg mx-auto mt-10 bg-black border rounded-lg shadow-tr">
+        <Toaster position="top-right" />
+        <h2 className="text-2xl font-bold mb-4">
+          Manage Classes, Subjects, and Units
+        </h2>
 
-      {/* Subject Selection and Display */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold">Subjects</h3>
-        <select
-          value={selectedClass}
-          onChange={(e) => setSelectedClass(e.target.value)}
-          className="block w-full text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg pl-3 p-4"
-        >
-          <option value="">Select a class</option>
-          {classes.map((cls) => (
-            <option key={cls.id} value={cls.id}>
-              {cls.name}
-            </option>
-          ))}
-        </select>
-        {loadingSubjects ? (
-          <p>Loading subjects...</p>
-        ) : (
-          subjects.map((sub) => (
-            <div
-              key={sub.id}
-              className="flex justify-between items-center my-2"
-            >
-              <span>{sub.subjectName}</span>
-              <div>
-                <button
-                  onClick={() =>
-                    handleEdit("subject", sub.id, {
-                      subjectName: sub.subjectName,
-                    })
-                  }
-                  className="text-blue-500 hover:bg-blue-100 px-3 py-1 rounded"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteSubject(sub.id)}
-                  className="text-red-500 hover:bg-red-100 px-3 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Unit Selection and Display */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold">Units</h3>
-        <select
-          value={selectedSubject}
-          onChange={(e) => setSelectedSubject(e.target.value)}
-          className="block w-full text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg pl-3 p-4"
-        >
-          <option value="">Select a subject</option>
-          {subjects.map((sub) => (
-            <option key={sub.id} value={sub.id}>
-              {sub.subjectName}
-            </option>
-          ))}
-        </select>
-        {loadingUnits ? (
-          <p>Loading units...</p>
-        ) : (
-          units.map((unit) => (
-            <div
-              key={unit.id}
-              className="flex justify-between items-center my-2"
-            >
-              <div>
-                <h4 className="font-semibold">{unit.unitName}</h4>
-                <p>Unit Number: {unit.unitNumber}</p>
-                {unit.unitImageUrl && (
-                  <img
-                    src={unit.unitImageUrl}
-                    alt="Unit"
-                    className="w-24 h-24 object-cover"
-                  />
-                )}
-                {unit.unitPdfLink && (
-                  <a
-                    href={unit.unitPdfLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+        {/* Class Selection and Display */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold">Classes</h3>
+          {loadingClasses ? (
+            <p>Loading classes...</p>
+          ) : (
+            classes.map((cls) => (
+              <div
+                key={cls.id}
+                className="flex justify-between items-center my-2"
+              >
+                <span>{cls.name}</span>
+                <div>
+                  <button
+                    onClick={() =>
+                      handleEdit("class", cls.id, { name: cls.name })
+                    }
+                    className="text-blue-500 hover:bg-blue-100 px-3 py-1 rounded"
                   >
-                    View PDF
-                  </a>
-                )}
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClass(cls.id)}
+                    className="text-red-500 hover:bg-red-100 px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div>
-                <button
-                  onClick={() =>
-                    handleEdit("unit", unit.id, {
-                      unitName: unit.unitName,
-                      unitNumber: unit.unitNumber,
-                      unitImageUrl: unit.unitImageUrl,
-                      unitPdfLink: unit.unitPdfLink,
-                    })
-                  }
-                  className="text-blue-500 hover:bg-blue-100 px-3 py-1 rounded"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() =>
-                    handleDeleteUnit(
-                      unit.id,
-                      unit.unitImageUrl,
-                      unit.unitPdfLink
-                    )
-                  }
-                  className="text-red-500 hover:bg-red-100 px-3 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+            ))
+          )}
+        </div>
 
-      {/* Edit Modal */}
-      {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center text-black">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-            <h3 className="text-xl font-semibold mb-4">Edit {editing.type}</h3>
-            <div>
-              {editing.type === "class" && (
-                <div>
-                  <label className="block mb-2">
-                    Class Name
-                    <input
-                      type="text"
-                      value={editing.data.name}
-                      onChange={(e) =>
-                        setEditing({
-                          ...editing,
-                          data: { ...editing.data, name: e.target.value },
-                        })
-                      }
-                      className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
-                    />
-                  </label>
-                </div>
-              )}
-              {editing.type === "subject" && (
-                <div>
-                  <label className="block mb-2">
-                    Subject Name
-                    <input
-                      type="text"
-                      value={editing.data.subjectName}
-                      onChange={(e) =>
-                        setEditing({
-                          ...editing,
-                          data: {
-                            ...editing.data,
-                            subjectName: e.target.value,
-                          },
-                        })
-                      }
-                      className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
-                    />
-                  </label>
-                </div>
-              )}
-              {editing.type === "unit" && (
-                <div>
-                  <label className="block mb-2">
-                    Unit Name
-                    <input
-                      type="text"
-                      value={editing.data.unitName}
-                      onChange={(e) =>
-                        setEditing({
-                          ...editing,
-                          data: { ...editing.data, unitName: e.target.value },
-                        })
-                      }
-                      className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
-                    />
-                  </label>
-                  <label className="block mb-2">
-                    Unit Number
-                    <input
-                      type="text"
-                      value={editing.data.unitNumber}
-                      onChange={(e) =>
-                        setEditing({
-                          ...editing,
-                          data: { ...editing.data, unitNumber: e.target.value },
-                        })
-                      }
-                      className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
-                    />
-                  </label>
-                  <label className="block mb-2">
-                    Unit Image URL
-                    <input
-                      type="text"
-                      value={editing.data.unitImageUrl}
-                      onChange={(e) =>
-                        setEditing({
-                          ...editing,
-                          data: {
-                            ...editing.data,
-                            unitImageUrl: e.target.value,
-                          },
-                        })
-                      }
-                      className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
-                    />
-                  </label>
-                  <label className="block mb-2">
-                    Unit PDF Link
-                    <input
-                      type="text"
-                      value={editing.data.unitPdfLink}
-                      onChange={(e) =>
-                        setEditing({
-                          ...editing,
-                          data: {
-                            ...editing.data,
-                            unitPdfLink: e.target.value,
-                          },
-                        })
-                      }
-                      className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
-                    />
-                  </label>
-                </div>
-              )}
-              <button
-                onClick={handleSave}
-                className="bg-blue-600 text-white p-3 rounded-md text-lg"
-                disabled={loadingEdit}
+        {/* Subject Selection and Display */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold">Subjects</h3>
+          <select
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+            className="block w-full text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg pl-3 p-4"
+          >
+            <option value="">Select a class</option>
+            {classes.map((cls) => (
+              <option key={cls.id} value={cls.id}>
+                {cls.name}
+              </option>
+            ))}
+          </select>
+          {loadingSubjects ? (
+            <p>Loading subjects...</p>
+          ) : (
+            subjects.map((sub) => (
+              <div
+                key={sub.id}
+                className="flex justify-between items-center my-2"
               >
-                {loadingEdit ? "Saving..." : "Save"}
-              </button>
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="ml-2 bg-gray-400 text-white p-3 rounded-md text-lg"
+                <span>{sub.subjectName}</span>
+                <div>
+                  <button
+                    onClick={() =>
+                      handleEdit("subject", sub.id, {
+                        subjectName: sub.subjectName,
+                      })
+                    }
+                    className="text-blue-500 hover:bg-blue-100 px-3 py-1 rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteSubject(sub.id)}
+                    className="text-red-500 hover:bg-red-100 px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Unit Selection and Display */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold">Units</h3>
+          <select
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+            className="block w-full text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg pl-3 p-4"
+          >
+            <option value="">Select a subject</option>
+            {subjects.map((sub) => (
+              <option key={sub.id} value={sub.id}>
+                {sub.subjectName}
+              </option>
+            ))}
+          </select>
+          {loadingUnits ? (
+            <p>Loading units...</p>
+          ) : (
+            units.map((unit) => (
+              <div
+                key={unit.id}
+                className="flex justify-between items-center my-2"
               >
-                Cancel
-              </button>
+                <div>
+                  <h4 className="font-semibold">{unit.unitName}</h4>
+                  <p>Unit Number: {unit.unitNumber}</p>
+                  {unit.unitImageUrl && (
+                    <img
+                      src={unit.unitImageUrl}
+                      alt="Unit"
+                      className="w-24 h-24 object-cover"
+                    />
+                  )}
+                  {unit.unitPdfLink && (
+                    <a
+                      href={unit.unitPdfLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      View PDF
+                    </a>
+                  )}
+                </div>
+                <div>
+                  <button
+                    onClick={() =>
+                      handleEdit("unit", unit.id, {
+                        unitName: unit.unitName,
+                        unitNumber: unit.unitNumber,
+                        unitImageUrl: unit.unitImageUrl,
+                        unitPdfLink: unit.unitPdfLink,
+                      })
+                    }
+                    className="text-blue-500 hover:bg-blue-100 px-3 py-1 rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleDeleteUnit(
+                        unit.id,
+                        unit.unitImageUrl,
+                        unit.unitPdfLink
+                      )
+                    }
+                    className="text-red-500 hover:bg-red-100 px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Edit Modal */}
+        {showEditModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center text-black">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+              <h3 className="text-xl font-semibold mb-4">
+                Edit {editing.type}
+              </h3>
+              <div>
+                {editing.type === "class" && (
+                  <div>
+                    <label className="block mb-2">
+                      Class Name
+                      <input
+                        type="text"
+                        value={editing.data.name}
+                        onChange={(e) =>
+                          setEditing({
+                            ...editing,
+                            data: { ...editing.data, name: e.target.value },
+                          })
+                        }
+                        className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
+                      />
+                    </label>
+                  </div>
+                )}
+                {editing.type === "subject" && (
+                  <div>
+                    <label className="block mb-2">
+                      Subject Name
+                      <input
+                        type="text"
+                        value={editing.data.subjectName}
+                        onChange={(e) =>
+                          setEditing({
+                            ...editing,
+                            data: {
+                              ...editing.data,
+                              subjectName: e.target.value,
+                            },
+                          })
+                        }
+                        className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
+                      />
+                    </label>
+                  </div>
+                )}
+                {editing.type === "unit" && (
+                  <div>
+                    <label className="block mb-2">
+                      Unit Name
+                      <input
+                        type="text"
+                        value={editing.data.unitName}
+                        onChange={(e) =>
+                          setEditing({
+                            ...editing,
+                            data: { ...editing.data, unitName: e.target.value },
+                          })
+                        }
+                        className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
+                      />
+                    </label>
+                    <label className="block mb-2">
+                      Unit Number
+                      <input
+                        type="text"
+                        value={editing.data.unitNumber}
+                        onChange={(e) =>
+                          setEditing({
+                            ...editing,
+                            data: {
+                              ...editing.data,
+                              unitNumber: e.target.value,
+                            },
+                          })
+                        }
+                        className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
+                      />
+                    </label>
+                    <label className="block mb-2">
+                      Unit Image URL
+                      <input
+                        type="text"
+                        value={editing.data.unitImageUrl}
+                        onChange={(e) =>
+                          setEditing({
+                            ...editing,
+                            data: {
+                              ...editing.data,
+                              unitImageUrl: e.target.value,
+                            },
+                          })
+                        }
+                        className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
+                      />
+                    </label>
+                    <label className="block mb-2">
+                      Unit PDF Link
+                      <input
+                        type="text"
+                        value={editing.data.unitPdfLink}
+                        onChange={(e) =>
+                          setEditing({
+                            ...editing,
+                            data: {
+                              ...editing.data,
+                              unitPdfLink: e.target.value,
+                            },
+                          })
+                        }
+                        className="block w-full border border-gray-300 rounded-md p-4 text-lg pl-3"
+                      />
+                    </label>
+                  </div>
+                )}
+                <button
+                  onClick={handleSave}
+                  className="bg-blue-600 text-white p-3 rounded-md text-lg"
+                  disabled={loadingEdit}
+                >
+                  {loadingEdit ? "Saving..." : "Save"}
+                </button>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="ml-2 bg-gray-400 text-white p-3 rounded-md text-lg"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
