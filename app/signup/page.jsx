@@ -9,6 +9,7 @@ import toast, { Toaster } from "react-hot-toast"; // React Hot Toast
 import { HashLoader } from "react-spinners"; // Spinner for loading effect
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Icons for show/hide password
 import { auth, db, storage } from "../firebase/page";
+import Image from "next/image";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -77,12 +78,15 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center bg-gray-100 h-screen">
+    <div className="flex flex-col  md:flex-row items-center justify-center bg-gray-100 h-screen">
       {/* Image Section for Small Screens */}
-      <div className="block md:hidden w-full">
-        <img
+      <div className="block h-96 md:hidden w-full ">
+        <Image
           src="https://img.freepik.com/free-vector/sign-concept-illustration_114360-125.jpg?ga=GA1.1.922153124.1719421359&semt=ais_hybrid"
           alt="Signup Illustration"
+          layout="responsive"
+          width={500}
+          height={600}
           className="h-[90vh] w-full object-cover"
         />
       </div>
@@ -244,11 +248,13 @@ const Signup = () => {
       </div>
 
       {/* Image Section for Medium+ Screens */}
-      <div className="hidden md:block w-1/2 h-screen">
-        <img
+      <div className="hidden md:block w-1/2 h-screen relative">
+        <Image
           src="https://img.freepik.com/free-vector/sign-concept-illustration_114360-125.jpg?ga=GA1.1.922153124.1719421359&semt=ais_hybrid"
           alt="Signup Illustration"
-          className="h-full w-full object-cover"
+          layout="fill"
+          objectFit="cover"
+          className="h-full w-full"
         />
       </div>
 

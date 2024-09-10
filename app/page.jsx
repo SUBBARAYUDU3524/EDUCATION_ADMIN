@@ -6,6 +6,7 @@ import { auth } from "./firebase/page";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast"; // React Hot Toast
 import { HashLoader } from "react-spinners"; // Spinner for loading effect
+import Image from "next/image";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -39,9 +40,11 @@ const Login = () => {
       <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white md:bg-transparent">
         {/* Image Section for Small Screens */}
         <div className="block md:hidden w-full">
-          <img
+          <Image
             src="https://img.freepik.com/free-vector/login-concept-illustration_114360-739.jpg?ga=GA1.1.922153124.1719421359&semt=ais_hybrid"
             alt="Login Illustration"
+            width={800}
+            height={600}
             className="h-80 w-full object-cover md:h-48"
           />
         </div>
@@ -94,9 +97,11 @@ const Login = () => {
 
         {/* Image Section for Medium+ Screens */}
         <div className="hidden md:block w-1/2">
-          <img
+          <Image
             src="https://img.freepik.com/free-vector/login-concept-illustration_114360-739.jpg?ga=GA1.1.922153124.1719421359&semt=ais_hybrid"
             alt="Login Illustration"
+            width={800}
+            height={600}
             className="h-full w-full object-cover rounded-r-lg"
           />
         </div>
