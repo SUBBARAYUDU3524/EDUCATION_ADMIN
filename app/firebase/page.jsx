@@ -4,12 +4,14 @@ import { getFirestore } from "firebase/firestore"; // Firestore
 import { getStorage } from "firebase/storage"; // Firebase Storage
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyBDyjBB7SyrW86qqoP-1mEL9D70SSPTGAA",
+  authDomain: "stocks-bf38f.firebaseapp.com",
+  databaseURL: "https://stocks-bf38f-default-rtdb.firebaseio.com",
+  projectId: "stocks-bf38f",
+  storageBucket: "stocks-bf38f.appspot.com",
+  messagingSenderId: "465489834542",
+  appId: "1:465489834542:web:2920c2fd23af169485a5bf",
+  measurementId: "G-5C8HRJKRT3",
 };
 
 const app = initializeApp(firebaseConfig);
