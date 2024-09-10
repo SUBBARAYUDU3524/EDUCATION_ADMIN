@@ -684,9 +684,9 @@ const IntermediateList = () => {
           </div>
 
           {showEditModal && (
-            <div className="fixed inset-0 flex items-center justify-center text-black bg-gray-800 bg-opacity-50">
-              <div className="bg-white p-6 rounded shadow-lg w-1/3">
-                <h2 className="text-2xl font-semibold mb-4">
+            <div className="fixed inset-0 flex items-center justify-center text-black bg-gray-800 bg-opacity-50 p-4">
+              <div className="bg-white p-4 md:p-6 rounded shadow-lg w-full md:w-1/3 max-w-md">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4">
                   Edit {editing.type}
                 </h2>
 
@@ -701,7 +701,7 @@ const IntermediateList = () => {
                         data: { ...editing.data, courseName: e.target.value },
                       })
                     }
-                    className="w-full p-2 border  border-gray-300 rounded mb-4"
+                    className="w-full p-2 border border-gray-300 rounded mb-4"
                     placeholder="Course Name"
                   />
                 )}
@@ -775,16 +775,16 @@ const IntermediateList = () => {
                         })
                       }
                       className="w-full p-2 border border-gray-300 rounded mb-4"
-                      placeholder="Unit Image URL"
+                      placeholder="Unit PDF Link"
                     />
                   </>
                 )}
 
-                <div className="flex justify-end">
+                <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2">
                   <button
                     onClick={handleUpdate}
                     disabled={loadingEdit}
-                    className="mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                   >
                     {loadingEdit ? "Updating..." : "Update"}
                   </button>
