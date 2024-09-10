@@ -10,7 +10,7 @@ import {
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import toast, { Toaster } from "react-hot-toast";
-import { db, storage } from "@/app/firebase/page";
+import { db, storage } from "@/app/FirebaseConfig";
 
 const ClassSubjectList = () => {
   const [classes, setClasses] = useState([]);

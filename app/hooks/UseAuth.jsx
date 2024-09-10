@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/page"; // Update with the correct path
+import { auth } from "../FirebaseConfig"; // Update with the correct path
 
 const useAuth = () => {
   const [user, setUser] = useState(null);

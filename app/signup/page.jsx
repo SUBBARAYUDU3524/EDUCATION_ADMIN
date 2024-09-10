@@ -8,7 +8,7 @@ import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast"; // React Hot Toast
 import { HashLoader } from "react-spinners"; // Spinner for loading effect
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Icons for show/hide password
-import { auth, db, storage } from "../firebase/page";
+import { auth, db, storage } from "../FirebaseConfig";
 import Image from "next/image";
 
 const Signup = () => {

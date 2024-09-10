@@ -2,11 +2,11 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { auth } from "./firebase/page";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast"; // React Hot Toast
 import { HashLoader } from "react-spinners"; // Spinner for loading effect
 import Image from "next/image";
+import { auth } from "./FirebaseConfig";
 
 const Login = () => {
   const [email, setEmail] = useState("");

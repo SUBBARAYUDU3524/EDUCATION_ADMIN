@@ -12,7 +12,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
-import { db, storage } from "@/app/firebase/page";
+import { db, storage } from "@/app/FirebaseConfig";
 
 const ClassSubjectForm = () => {
   const [className, setClassName] = useState("");

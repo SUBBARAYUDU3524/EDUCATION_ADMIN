@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { db, storage } from "@/app/firebase/page"; // Ensure your firebase configuration is correct
+import { db, storage } from "@/app/FirebaseConfig"; // Ensure your firebase configuration is correct
 import {
   collection,
   addDoc,

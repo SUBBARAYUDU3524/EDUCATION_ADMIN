@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/app/firebase/page";
+import { auth } from "@/app/FirebaseConfig";
 import { usePathname, useRouter } from "next/navigation";
 import {
   FaTachometerAlt,

@@ -9,7 +9,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
-import { db, storage } from "@/app/firebase/page"; // Adjust the import as needed
+import { db, storage } from "@/app/FirebaseConfig"; // Adjust the import as needed
 import { Toaster, toast } from "react-hot-toast";
 
 const IntermediateList = () => {
