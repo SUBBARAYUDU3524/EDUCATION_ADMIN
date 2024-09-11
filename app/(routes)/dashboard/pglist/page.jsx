@@ -372,11 +372,11 @@ const IntermediateList = () => {
       );
 
       toast.success(
-        "Degree and all its courses, semesters, subjects, and units deleted successfully!"
+        "PG and all its courses, semesters, subjects, and units deleted successfully!"
       );
     } catch (error) {
-      console.error("Error deleting Degree:", error);
-      toast.error("Failed to delete Degree.");
+      console.error("Error deleting PG:", error);
+      toast.error("Failed to delete PG.");
     }
   };
 
@@ -418,7 +418,7 @@ const IntermediateList = () => {
       setLoadingEdit(true);
       const { type, id, data } = editing;
       switch (type) {
-        case "DEGREE":
+        case "PG":
           await updateDoc(doc(db, collectionname, id), data);
           setIntermediates(
             intermediates.map((intermediate) =>
@@ -512,13 +512,14 @@ const IntermediateList = () => {
         <div className="space-y-4">
           <div className="flex flex-col mb-4">
             <label className="font-semibold mb-2">
-              Select Degree:
+              Select PG:
               <select
                 value={selectedIntermediate}
                 onChange={(e) => setSelectedIntermediate(e.target.value)}
                 className="ml-2 p-2 border text-black border-gray-300 rounded"
               >
-                <option value="">Select Degree</option>
+                <option value="">Select PG</option>
+
                 {loadingIntermediates ? (
                   <option>Loading...</option>
                 ) : (
@@ -637,11 +638,7 @@ const IntermediateList = () => {
                     <div>
                       <button
                         onClick={() =>
-                          handleEditClick(
-                            "DEGREE",
-                            intermediate.id,
-                            intermediate
-                          )
+                          handleEditClick("PG", intermediate.id, intermediate)
                         }
                         className="mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                       >
@@ -820,6 +817,21 @@ const IntermediateList = () => {
                 </h2>
 
                 {/* Dynamic Form Fields Based on the Type */}
+
+                {editing.type === "PG" && (
+                  <input
+                    type="text"
+                    value={editing.data.name || ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        data: { ...editing.data, name: e.target.value },
+                      })
+                    }
+                    className="w-full p-2 border border-gray-300 rounded mb-4"
+                    placeholder="Name"
+                  />
+                )}
                 {editing.type === "COURSES" && (
                   <input
                     type="text"
@@ -832,6 +844,21 @@ const IntermediateList = () => {
                     }
                     className="w-full p-2 border border-gray-300 rounded mb-4"
                     placeholder="Course Name"
+                  />
+                )}
+
+                {editing.type === "SEMESTERS" && (
+                  <input
+                    type="text"
+                    value={editing.data.semesterName || ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        data: { ...editing.data, semesterName: e.target.value },
+                      })
+                    }
+                    className="w-full p-2 border border-gray-300 rounded mb-4"
+                    placeholder="Semester Name"
                   />
                 )}
 

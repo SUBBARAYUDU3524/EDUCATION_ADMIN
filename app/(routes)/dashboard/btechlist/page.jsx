@@ -12,7 +12,7 @@ import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "@/app/FirebaseConfig"; // Adjust the import as needed
 import { Toaster, toast } from "react-hot-toast";
 
-const IntermediateList = () => {
+const BtechList = () => {
   const [selectedIntermediate, setSelectedIntermediate] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
@@ -694,20 +694,6 @@ const IntermediateList = () => {
                 </h2>
 
                 {/* Dynamic Form Fields Based on the Type */}
-                {editing.type === "INTERMEDIATE" && (
-                  <input
-                    type="text"
-                    value={editing.data.name || ""}
-                    onChange={(e) =>
-                      setEditing({
-                        ...editing,
-                        data: { ...editing.data, name: e.target.value },
-                      })
-                    }
-                    className="w-full p-2 border border-gray-300 rounded mb-4"
-                    placeholder="Name"
-                  />
-                )}
                 {editing.type === "COURSES" && (
                   <input
                     type="text"
@@ -722,6 +708,7 @@ const IntermediateList = () => {
                     placeholder="Course Name"
                   />
                 )}
+
                 {editing.type === "SUBJECTS" && (
                   <input
                     type="text"
@@ -820,4 +807,4 @@ const IntermediateList = () => {
   );
 };
 
-export default IntermediateList;
+export default BtechList;

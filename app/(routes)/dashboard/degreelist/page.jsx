@@ -820,6 +820,21 @@ const IntermediateList = () => {
                 </h2>
 
                 {/* Dynamic Form Fields Based on the Type */}
+                {editing.type === "DEGREE" && (
+                  <input
+                    type="text"
+                    value={editing.data.name || ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        data: { ...editing.data, name: e.target.value },
+                      })
+                    }
+                    className="w-full p-2 border border-gray-300 rounded mb-4"
+                    placeholder="Name"
+                  />
+                )}
+
                 {editing.type === "COURSES" && (
                   <input
                     type="text"
@@ -835,6 +850,20 @@ const IntermediateList = () => {
                   />
                 )}
 
+                {editing.type === "SEMESTERS" && (
+                  <input
+                    type="text"
+                    value={editing.data.semesterName || ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        data: { ...editing.data, semesterName: e.target.value },
+                      })
+                    }
+                    className="w-full p-2 border border-gray-300 rounded mb-4"
+                    placeholder="Semester Name"
+                  />
+                )}
                 {editing.type === "SUBJECTS" && (
                   <input
                     type="text"
