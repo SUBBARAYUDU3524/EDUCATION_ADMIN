@@ -29,7 +29,7 @@ const IntermediateForm = () => {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [loading, setLoading] = useState(false);
-  const collectionname = "BTECH";
+  const collectionname = "MEDICAL";
 
   useEffect(() => {
     const yearRef = collection(db, collectionname);
@@ -223,7 +223,7 @@ const IntermediateForm = () => {
 
   return (
     <div>
-      <h1 className="text-3xl text-center mt-10 underline">BTECH FORM</h1>
+      <h1 className="text-3xl text-center mt-10 underline">MEDICAL FORM</h1>
 
       <div className="p-6 max-w-lg mx-auto mt-10 bg-black border rounded-lg shadow-md text-white">
         <Toaster position="top-right" />

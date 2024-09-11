@@ -1,11 +1,9 @@
-"use client";
 import { useState, useEffect } from "react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/app/FirebaseConfig";
 import { usePathname, useRouter } from "next/navigation";
 import {
   FaTachometerAlt,
-  FaInfoCircle,
   FaEnvelope,
   FaStreetView,
   FaBars,
@@ -108,6 +106,30 @@ const SideNav = () => {
       path: "/dashboard/pglist",
       icon: <FaEnvelope />,
     },
+    {
+      id: 10,
+      name: "BTech Form",
+      path: "/dashboard/btechform",
+      icon: <FaEnvelope />,
+    },
+    {
+      id: 11,
+      name: "BTech List",
+      path: "/dashboard/btechlist",
+      icon: <FaEnvelope />,
+    },
+    {
+      id: 12,
+      name: "Medical Form",
+      path: "/dashboard/medicalform",
+      icon: <FaEnvelope />,
+    },
+    {
+      id: 13,
+      name: "Medical List",
+      path: "/dashboard/medicallist",
+      icon: <FaEnvelope />,
+    },
   ];
 
   return (
@@ -139,7 +161,9 @@ const SideNav = () => {
         </div>
 
         {/* Navigation Menu */}
-        <ul className="mt-4 pl-10 pr-10 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0">
+        <ul className="mt-4 pl-10 pr-10 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0 overflow-y-auto h-auto scrollbar-hide">
+          {" "}
+          {/* Added overflow and height */}
           {menuList.map((item) => (
             <li key={item.id} className="mb-4">
               <button

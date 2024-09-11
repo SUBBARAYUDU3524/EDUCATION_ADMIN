@@ -19,7 +19,7 @@ const BtechList = () => {
   const [selectedUnit, setSelectedUnit] = useState("");
 
   const [intermediates, setIntermediates] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const [semester, setSemester] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [units, setUnits] = useState([]);
 
@@ -31,7 +31,7 @@ const BtechList = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editing, setEditing] = useState({ type: "", id: "", data: {} });
   const [loadingEdit, setLoadingEdit] = useState(false);
-  const collectionname = "INTERMEDIATE";
+  const collectionname = "BTECH";
 
   useEffect(() => {
     const fetchIntermediates = async () => {
@@ -42,7 +42,7 @@ const BtechList = () => {
           snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
         );
       } catch (error) {
-        console.error("Error fetching intermediates:", error);
+        console.error("Error fetching BTECH:", error);
       } finally {
         setLoadingIntermediates(false);
       }
@@ -56,13 +56,16 @@ const BtechList = () => {
         setLoadingCourses(true);
         try {
           const snapshot = await getDocs(
-            collection(db, `${collectionname}/${selectedIntermediate}/courses`)
+            collection(
+              db,
+              `${collectionname}/${selectedIntermediate}/semesters`
+            )
           );
-          setCourses(
+          setSemester(
             snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
           );
         } catch (error) {
-          console.error("Error fetching courses:", error);
+          console.error("Error fetching semester:", error);
         } finally {
           setLoadingCourses(false);
         }
@@ -79,7 +82,7 @@ const BtechList = () => {
           const snapshot = await getDocs(
             collection(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects`
+              `${collectionname}/${selectedIntermediate}/semesters/${selectedCourse}/subjects`
             )
           );
           setSubjects(
@@ -103,7 +106,7 @@ const BtechList = () => {
           const snapshot = await getDocs(
             collection(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${selectedSubject}/units`
+              `${collectionname}/${selectedIntermediate}/semesters/${selectedCourse}/subjects/${selectedSubject}/units`
             )
           );
           setUnits(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
@@ -122,7 +125,7 @@ const BtechList = () => {
     try {
       const courseRef = doc(
         db,
-        `${collectionname}/${selectedIntermediate}/courses/${courseId}`
+        `${collectionname}/${selectedIntermediate}/semesters/${courseId}`
       );
 
       // Fetch all subjects under the course
@@ -173,7 +176,7 @@ const BtechList = () => {
       await deleteDoc(courseRef);
 
       // Remove course from state immediately
-      setCourses((prevCourses) =>
+      setSemester((prevCourses) =>
         prevCourses.filter((course) => course.id !== courseId)
       );
 
@@ -191,7 +194,7 @@ const BtechList = () => {
     try {
       const subjectRef = doc(
         db,
-        `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${subjectId}`
+        `${collectionname}/${selectedIntermediate}/semesters/${selectedCourse}/subjects/${subjectId}`
       );
 
       // Fetch all units under the subject
@@ -235,14 +238,14 @@ const BtechList = () => {
     }
   };
 
-  // Similar function to delete an intermediate and its courses
+  // Similar function to delete an intermediate and its semester
   const handleDeleteIntermediate = async (intermediateId) => {
     try {
       const intermediateRef = doc(db, collectionname, intermediateId);
 
-      // Fetch all courses under the intermediate
+      // Fetch all semester under the intermediate
       const courseSnapshot = await getDocs(
-        collection(intermediateRef, "courses")
+        collection(intermediateRef, "semester")
       );
       for (const courseDoc of courseSnapshot.docs) {
         const courseId = courseDoc.id;
@@ -298,7 +301,7 @@ const BtechList = () => {
         await deleteDoc(courseDoc.ref);
 
         // Remove course from state immediately
-        setCourses((prevCourses) =>
+        setSemester((prevCourses) =>
           prevCourses.filter((course) => course.id !== courseId)
         );
       }
@@ -314,7 +317,7 @@ const BtechList = () => {
       );
 
       toast.success(
-        "Intermediate and all related courses, subjects, and units deleted successfully!"
+        "Intermediate and all related semester, subjects, and units deleted successfully!"
       );
     } catch (error) {
       console.error("Error deleting intermediate:", error);
@@ -326,7 +329,7 @@ const BtechList = () => {
     try {
       const unitRef = doc(
         db,
-        `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${selectedSubject}/units`,
+        `${collectionname}/${selectedIntermediate}/semesters/${selectedCourse}/subjects/${selectedSubject}/units`,
         unitId
       );
       const unitDoc = await getDoc(unitRef);
@@ -360,7 +363,7 @@ const BtechList = () => {
       setLoadingEdit(true);
       const { type, id, data } = editing;
       switch (type) {
-        case "INTERMEDIATE":
+        case "GROUPS":
           await updateDoc(doc(db, collectionname, id), data);
           setIntermediates(
             intermediates.map((intermediate) =>
@@ -370,13 +373,13 @@ const BtechList = () => {
             )
           );
           break;
-        case "COURSES":
+        case "SEMESTERS":
           await updateDoc(
-            doc(db, `${collectionname}/${selectedIntermediate}/courses`, id),
+            doc(db, `${collectionname}/${selectedIntermediate}/semesters`, id),
             data
           );
-          setCourses(
-            courses.map((course) =>
+          setSemester(
+            semester.map((course) =>
               course.id === id ? { ...course, ...data } : course
             )
           );
@@ -385,7 +388,7 @@ const BtechList = () => {
           await updateDoc(
             doc(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects`,
+              `${collectionname}/${selectedIntermediate}/semesters/${selectedCourse}/subjects`,
               id
             ),
             data
@@ -400,7 +403,7 @@ const BtechList = () => {
           await updateDoc(
             doc(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${selectedSubject}/units`,
+              `${collectionname}/${selectedIntermediate}/semesters/${selectedCourse}/subjects/${selectedSubject}/units`,
               id
             ),
             data
@@ -429,25 +432,23 @@ const BtechList = () => {
 
   return (
     <div>
-      <h1 className="text-3xl text-center mt-10 underline">
-        INTERMEDIATE LIST
-      </h1>
+      <h1 className="text-3xl text-center mt-10 underline">BTECH LIST</h1>
 
       <div className="p-4">
         <Toaster />
         <h1 className="text-2xl font-bold mb-4">
-          Class, Subject, and Unit Management
+          Group, Subject, and Unit Management
         </h1>
         <div className="space-y-4">
           <div className="flex flex-col mb-4">
             <label className="font-semibold mb-2">
-              Select Intermediate:
+              Select Group:
               <select
                 value={selectedIntermediate}
                 onChange={(e) => setSelectedIntermediate(e.target.value)}
                 className="ml-2 p-2 border text-black border-gray-300 rounded"
               >
-                <option value="">Select Intermediate</option>
+                <option value="">Select Group</option>
                 {loadingIntermediates ? (
                   <option>Loading...</option>
                 ) : (
@@ -462,19 +463,19 @@ const BtechList = () => {
 
             {selectedIntermediate && (
               <label className="font-semibold mb-2">
-                Select Course:
+                Select Semester
                 <select
                   value={selectedCourse}
                   onChange={(e) => setSelectedCourse(e.target.value)}
                   className="ml-2 p-2 border text-black border-gray-300 rounded"
                 >
-                  <option value="">Select Course</option>
+                  <option value="">Select Semester</option>
                   {loadingCourses ? (
                     <option>Loading...</option>
                   ) : (
-                    courses.map((course) => (
+                    semester.map((course) => (
                       <option key={course.id} value={course.id}>
-                        {course.courseName}
+                        {course.semesterName}
                       </option>
                     ))
                   )}
@@ -529,7 +530,7 @@ const BtechList = () => {
 
           <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold mb-2">Intermediates</h2>
+              <h2 className="text-xl font-semibold mb-2">Groups</h2>
               {loadingIntermediates ? (
                 <p>Loading...</p>
               ) : (
@@ -543,7 +544,7 @@ const BtechList = () => {
                       <button
                         onClick={() =>
                           handleEditClick(
-                            "INTERMEDIATE",
+                            "GROUPS",
                             intermediate.id,
                             intermediate
                           )
@@ -567,20 +568,20 @@ const BtechList = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold mb-2">Courses</h2>
+              <h2 className="text-xl font-semibold mb-2">Semesters</h2>
               {loadingCourses ? (
                 <p>Loading...</p>
               ) : (
-                courses.map((course) => (
+                semester.map((course) => (
                   <div
                     key={course.id}
                     className="flex items-center justify-between mb-2 p-2 border border-gray-300 rounded"
                   >
-                    <span>{course.courseName}</span>
+                    <span>{course.semesterName}</span>
                     <div>
                       <button
                         onClick={() =>
-                          handleEditClick("COURSES", course.id, course)
+                          handleEditClick("SEMESTERS", course.id, course)
                         }
                         className="mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                       >
@@ -694,14 +695,28 @@ const BtechList = () => {
                 </h2>
 
                 {/* Dynamic Form Fields Based on the Type */}
-                {editing.type === "COURSES" && (
+                {editing.type === "GROUPS" && (
                   <input
                     type="text"
-                    value={editing.data.courseName || ""}
+                    value={editing.data.name || ""}
                     onChange={(e) =>
                       setEditing({
                         ...editing,
-                        data: { ...editing.data, courseName: e.target.value },
+                        data: { ...editing.data, name: e.target.value },
+                      })
+                    }
+                    className="w-full p-2 border border-gray-300 rounded mb-4"
+                    placeholder="Course Name"
+                  />
+                )}
+                {editing.type === "SEMESTERS" && (
+                  <input
+                    type="text"
+                    value={editing.data.semesterName || ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        data: { ...editing.data, semesterName: e.target.value },
                       })
                     }
                     className="w-full p-2 border border-gray-300 rounded mb-4"

@@ -624,7 +624,7 @@ const IntermediateList = () => {
 
           <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-semibold mb-2">Intermediates</h2>
+              <h2 className="text-xl font-semibold mb-2">Universities</h2>
               {loadingIntermediates ? (
                 <p>Loading...</p>
               ) : (
