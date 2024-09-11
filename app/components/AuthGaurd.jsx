@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import useAuth from "../hooks/UseAuth";
 import { useRouter } from "next/navigation";
+import { ClipLoader } from "react-spinners"; // Import ClipLoader for circular spinner
 
 const AuthGuard = ({ children }) => {
   const { user, loading } = useAuth();
@@ -14,8 +15,13 @@ const AuthGuard = ({ children }) => {
   }, [user, loading, router]);
 
   if (loading) {
-    // You can show a loader or placeholder while checking authentication status
-    return <div>Loading...</div>;
+    // Show a spinner and custom background while loading
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-purple-900 to-black">
+        <ClipLoader size={80} color="#ffffff" />
+        <p className="text-center mt-4 text-white text-lg">loading..</p>
+      </div>
+    );
   }
 
   return <>{children}</>;

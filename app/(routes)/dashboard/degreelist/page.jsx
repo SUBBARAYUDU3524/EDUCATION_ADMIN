@@ -17,16 +17,19 @@ const IntermediateList = () => {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedUnit, setSelectedUnit] = useState("");
+  const [selectedSemester, setSelectedSemester] = useState("");
 
   const [intermediates, setIntermediates] = useState([]);
   const [courses, setCourses] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [units, setUnits] = useState([]);
+  const [semesters, setSemesters] = useState([]);
 
   const [loadingIntermediates, setLoadingIntermediates] = useState(true);
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
   const [loadingUnits, setLoadingUnits] = useState(true);
+  const [loadingsemester, setLoadingsemester] = useState(true);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editing, setEditing] = useState({ type: "", id: "", data: {} });
@@ -72,13 +75,36 @@ const IntermediateList = () => {
 
   useEffect(() => {
     if (selectedCourse) {
+      const fetchSemesters = async () => {
+        setLoadingsemester(true);
+        try {
+          const snapshot = await getDocs(
+            collection(
+              db,
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters`
+            )
+          );
+          setSemesters(
+            snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+          );
+        } catch (error) {
+          console.error("Error fetching semester:", error);
+        } finally {
+          setLoadingsemester(false);
+        }
+      };
+      fetchSemesters();
+    }
+  }, [selectedCourse]);
+  useEffect(() => {
+    if (selectedSemester) {
       const fetchSubjects = async () => {
         setLoadingSubjects(true);
         try {
           const snapshot = await getDocs(
             collection(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects`
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects`
             )
           );
           setSubjects(
@@ -92,7 +118,7 @@ const IntermediateList = () => {
       };
       fetchSubjects();
     }
-  }, [selectedCourse]);
+  }, [selectedSemester]);
 
   useEffect(() => {
     if (selectedSubject) {
@@ -102,7 +128,7 @@ const IntermediateList = () => {
           const snapshot = await getDocs(
             collection(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${selectedSubject}/units`
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}subjects/${selectedSubject}/units`
             )
           );
           setUnits(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
@@ -124,131 +150,16 @@ const IntermediateList = () => {
         `${collectionname}/${selectedIntermediate}/courses/${courseId}`
       );
 
-      // Fetch all subjects under the course
-      const subjectSnapshot = await getDocs(collection(courseRef, "subjects"));
-      for (const subjectDoc of subjectSnapshot.docs) {
-        const subjectId = subjectDoc.id; // Get the subject ID
-
-        // Fetch all units under each subject
-        const unitSnapshot = await getDocs(collection(subjectDoc.ref, "units"));
-        for (const unitDoc of unitSnapshot.docs) {
-          const unitId = unitDoc.id; // Get the unit ID
-          const unitData = unitDoc.data();
-
-          // Delete associated files from storage
-          if (unitData.unitImageUrl) {
-            const imageRef = ref(storage, unitData.unitImageUrl);
-            await deleteObject(imageRef);
-          }
-          if (unitData.unitPdfLink) {
-            const pdfRef = ref(storage, unitData.unitPdfLink);
-            await deleteObject(pdfRef);
-          }
-
-          // Delete each unit document
-          await deleteDoc(unitDoc.ref);
-
-          // Remove unit from state immediately
-          setUnits((prevUnits) =>
-            prevUnits.filter(
-              (unit) => unit.id !== unitId && unit.courseId !== courseId
-            )
-          );
-        }
-
-        // Delete each subject document
-        await deleteDoc(subjectDoc.ref);
-
-        // Remove subject from state immediately
-        setSubjects((prevSubjects) =>
-          prevSubjects.filter(
-            (subject) =>
-              subject.id !== subjectId && subject.courseId !== courseId
-          )
-        );
-      }
-
-      // Delete the course document
-      await deleteDoc(courseRef);
-
-      // Remove course from state immediately
-      setCourses((prevCourses) =>
-        prevCourses.filter((course) => course.id !== courseId)
+      // Fetch all semesters under the course
+      const semesterSnapshot = await getDocs(
+        collection(courseRef, "semesters")
       );
+      for (const semesterDoc of semesterSnapshot.docs) {
+        const semesterId = semesterDoc.id;
 
-      toast.success(
-        "Course and all its subjects and units deleted successfully!"
-      );
-    } catch (error) {
-      console.error("Error deleting course:", error);
-      toast.error("Failed to delete course.");
-    }
-  };
-
-  // Function to delete a subject and all its units
-  const handleDeleteSubject = async (subjectId) => {
-    try {
-      const subjectRef = doc(
-        db,
-        `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${subjectId}`
-      );
-
-      // Fetch all units under the subject
-      const unitSnapshot = await getDocs(collection(subjectRef, "units"));
-      for (const unitDoc of unitSnapshot.docs) {
-        const unitData = unitDoc.data();
-
-        // Delete associated files from storage
-        if (unitData.unitImageUrl) {
-          const imageRef = ref(storage, unitData.unitImageUrl);
-          await deleteObject(imageRef);
-        }
-        if (unitData.unitPdfLink) {
-          const pdfRef = ref(storage, unitData.unitPdfLink);
-          await deleteObject(pdfRef);
-        }
-
-        // Delete each unit document
-        await deleteDoc(unitDoc.ref);
-
-        // Remove unit from state immediately
-        setUnits((prevUnits) =>
-          prevUnits.filter(
-            (unit) => unit.id !== unitDoc.id && unit.subjectId !== subjectId
-          )
-        );
-      }
-
-      // Delete the subject document
-      await deleteDoc(subjectRef);
-
-      // Remove subject from state immediately
-      setSubjects((prevSubjects) =>
-        prevSubjects.filter((subject) => subject.id !== subjectId)
-      );
-
-      toast.success("Subject and all its units deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting subject:", error);
-      toast.error("Failed to delete subject.");
-    }
-  };
-
-  // Similar function to delete an intermediate and its courses
-  const handleDeleteIntermediate = async (intermediateId) => {
-    try {
-      const intermediateRef = doc(db, collectionname, intermediateId);
-
-      // Fetch all courses under the intermediate
-      const courseSnapshot = await getDocs(
-        collection(intermediateRef, "courses")
-      );
-      for (const courseDoc of courseSnapshot.docs) {
-        const courseId = courseDoc.id;
-
-        // Fetch all subjects under each course
+        // Fetch all subjects under the semester
         const subjectSnapshot = await getDocs(
-          collection(courseDoc.ref, "subjects")
+          collection(semesterDoc.ref, "subjects")
         );
         for (const subjectDoc of subjectSnapshot.docs) {
           const subjectId = subjectDoc.id;
@@ -272,40 +183,188 @@ const IntermediateList = () => {
 
             // Delete each unit document
             await deleteDoc(unitDoc.ref);
-
-            // Remove unit from state immediately
-            setUnits((prevUnits) =>
-              prevUnits.filter(
-                (unit) => unit.id !== unitDoc.id && unit.subjectId !== subjectId
-              )
-            );
           }
 
-          // Delete each subject document
+          // Delete the subject document after all units are deleted
           await deleteDoc(subjectDoc.ref);
-
-          // Remove subject from state immediately
-          setSubjects((prevSubjects) =>
-            prevSubjects.filter(
-              (subject) =>
-                subject.id !== subjectId && subject.courseId !== courseId
-            )
-          );
         }
 
-        // Delete each course document
-        await deleteDoc(courseDoc.ref);
-
-        // Remove course from state immediately
-        setCourses((prevCourses) =>
-          prevCourses.filter((course) => course.id !== courseId)
-        );
+        // Delete the semester document after all subjects are deleted
+        await deleteDoc(semesterDoc.ref);
       }
 
-      // Delete the intermediate document
+      // Delete the course document after all semesters are deleted
+      await deleteDoc(courseRef);
+
+      setCourses((prevCourses) =>
+        prevCourses.filter((course) => course.id !== courseId)
+      );
+
+      toast.success(
+        "Course and all its semesters, subjects, and units deleted successfully!"
+      );
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      toast.error("Failed to delete course.");
+    }
+  };
+
+  // Function to delete a subject and all its units
+  const handleDeleteSemester = async (semesterId) => {
+    try {
+      const semesterRef = doc(
+        db,
+        `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${semesterId}`
+      );
+
+      // Fetch all subjects under the semester
+      const subjectSnapshot = await getDocs(
+        collection(semesterRef, "subjects")
+      );
+      for (const subjectDoc of subjectSnapshot.docs) {
+        const subjectId = subjectDoc.id;
+
+        // Fetch all units under each subject
+        const unitSnapshot = await getDocs(collection(subjectDoc.ref, "units"));
+        for (const unitDoc of unitSnapshot.docs) {
+          const unitData = unitDoc.data();
+
+          // Delete associated files from storage
+          if (unitData.unitImageUrl) {
+            const imageRef = ref(storage, unitData.unitImageUrl);
+            await deleteObject(imageRef);
+          }
+          if (unitData.unitPdfLink) {
+            const pdfRef = ref(storage, unitData.unitPdfLink);
+            await deleteObject(pdfRef);
+          }
+
+          // Delete each unit document
+          await deleteDoc(unitDoc.ref);
+        }
+
+        // Delete the subject document after all units are deleted
+        await deleteDoc(subjectDoc.ref);
+      }
+
+      // Delete the semester document after all subjects are deleted
+      await deleteDoc(semesterRef);
+
+      setSemesters((prevSemesters) =>
+        prevSemesters.filter((semester) => semester.id !== semesterId)
+      );
+
+      toast.success(
+        "Semester and all its subjects and units deleted successfully!"
+      );
+    } catch (error) {
+      console.error("Error deleting semester:", error);
+      toast.error("Failed to delete semester.");
+    }
+  };
+
+  const handleDeleteSubject = async (subjectId) => {
+    try {
+      const subjectRef = doc(
+        db,
+        `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects/${subjectId}`
+      );
+
+      // Fetch all units under the subject
+      const unitSnapshot = await getDocs(collection(subjectRef, "units"));
+      for (const unitDoc of unitSnapshot.docs) {
+        const unitData = unitDoc.data();
+
+        // Delete associated files from storage
+        if (unitData.unitImageUrl) {
+          const imageRef = ref(storage, unitData.unitImageUrl);
+          await deleteObject(imageRef);
+        }
+        if (unitData.unitPdfLink) {
+          const pdfRef = ref(storage, unitData.unitPdfLink);
+          await deleteObject(pdfRef);
+        }
+
+        // Delete each unit document
+        await deleteDoc(unitDoc.ref);
+      }
+
+      // Delete the subject document after all units are deleted
+      await deleteDoc(subjectRef);
+
+      setSubjects((prevSubjects) =>
+        prevSubjects.filter((subject) => subject.id !== subjectId)
+      );
+
+      toast.success("Subject and all its units deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting subject:", error);
+      toast.error("Failed to delete subject.");
+    }
+  };
+
+  // Similar function to delete an intermediate and its courses
+  const handleDeleteIntermediate = async (intermediateId) => {
+    try {
+      const intermediateRef = doc(db, collectionname, intermediateId);
+
+      // Fetch all courses under the intermediate
+      const courseSnapshot = await getDocs(
+        collection(intermediateRef, "courses")
+      );
+      for (const courseDoc of courseSnapshot.docs) {
+        const courseId = courseDoc.id;
+
+        // Fetch all semesters under each course
+        const semesterSnapshot = await getDocs(
+          collection(courseDoc.ref, "semesters")
+        );
+        for (const semesterDoc of semesterSnapshot.docs) {
+          const semesterId = semesterDoc.id;
+
+          // Fetch all subjects under each semester
+          const subjectSnapshot = await getDocs(
+            collection(semesterDoc.ref, "subjects")
+          );
+          for (const subjectDoc of subjectSnapshot.docs) {
+            const subjectId = subjectDoc.id;
+
+            // Fetch all units under each subject
+            const unitSnapshot = await getDocs(
+              collection(subjectDoc.ref, "units")
+            );
+            for (const unitDoc of unitSnapshot.docs) {
+              const unitData = unitDoc.data();
+
+              // Delete associated files from storage (image and PDF)
+              if (unitData.unitImageUrl) {
+                const imageRef = ref(storage, unitData.unitImageUrl);
+                await deleteObject(imageRef);
+              }
+              if (unitData.unitPdfLink) {
+                const pdfRef = ref(storage, unitData.unitPdfLink);
+                await deleteObject(pdfRef);
+              }
+
+              // Delete each unit document
+              await deleteDoc(unitDoc.ref);
+            }
+
+            // Delete the subject document after all units are deleted
+            await deleteDoc(subjectDoc.ref);
+          }
+
+          // Delete the semester document after all subjects are deleted
+          await deleteDoc(semesterDoc.ref);
+        }
+
+        // Delete the course document after all semesters are deleted
+        await deleteDoc(courseDoc.ref);
+      }
+
+      // Finally, delete the intermediate document
       await deleteDoc(intermediateRef);
 
-      // Remove intermediate from state immediately
       setIntermediates((prevIntermediates) =>
         prevIntermediates.filter(
           (intermediate) => intermediate.id !== intermediateId
@@ -313,7 +372,7 @@ const IntermediateList = () => {
       );
 
       toast.success(
-        "Degree and all related courses, subjects, and units deleted successfully!"
+        "Degree and all its courses, semesters, subjects, and units deleted successfully!"
       );
     } catch (error) {
       console.error("Error deleting Degree:", error);
@@ -325,7 +384,7 @@ const IntermediateList = () => {
     try {
       const unitRef = doc(
         db,
-        `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${selectedSubject}/units`,
+        `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}semesters/${selectedSemester}/subjects/${selectedSubject}/units`,
         unitId
       );
       const unitDoc = await getDoc(unitRef);
@@ -380,11 +439,26 @@ const IntermediateList = () => {
             )
           );
           break;
+        case "SEMESTERS":
+          await updateDoc(
+            doc(
+              db,
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters`,
+              id
+            ),
+            data
+          );
+          setSemesters(
+            semesters.map((course) =>
+              course.id === id ? { ...course, ...data } : course
+            )
+          );
+          break;
         case "SUBJECTS":
           await updateDoc(
             doc(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects`,
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects`,
               id
             ),
             data
@@ -399,7 +473,7 @@ const IntermediateList = () => {
           await updateDoc(
             doc(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/subjects/${selectedSubject}/units`,
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects/${selectedSubject}/units`,
               id
             ),
             data
@@ -481,6 +555,27 @@ const IntermediateList = () => {
 
             {selectedIntermediate && selectedCourse && (
               <label className="font-semibold mb-2">
+                Select semester:
+                <select
+                  value={selectedSemester}
+                  onChange={(e) => setSelectedSemester(e.target.value)}
+                  className="ml-2 p-2 border text-black border-gray-300 rounded"
+                >
+                  <option value="">Select semester</option>
+                  {loadingsemester ? (
+                    <option>Loading...</option>
+                  ) : (
+                    semesters.map((subject) => (
+                      <option key={subject.id} value={subject.id}>
+                        {subject.semesterName}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </label>
+            )}
+            {selectedIntermediate && selectedCourse && selectedSemester && (
+              <label className="font-semibold mb-2">
                 Select Subject:
                 <select
                   value={selectedSubject}
@@ -501,27 +596,30 @@ const IntermediateList = () => {
               </label>
             )}
 
-            {selectedIntermediate && selectedCourse && selectedSubject && (
-              <label className="font-semibold mb-2">
-                Select Unit:
-                <select
-                  value={selectedUnit}
-                  onChange={(e) => setSelectedUnit(e.target.value)}
-                  className="ml-2 p-2 border text-black border-gray-300 rounded"
-                >
-                  <option value="">Select Unit</option>
-                  {loadingUnits ? (
-                    <option>Loading...</option>
-                  ) : (
-                    units.map((unit) => (
-                      <option key={unit.id} value={unit.id}>
-                        {unit.unitName}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </label>
-            )}
+            {selectedIntermediate &&
+              selectedCourse &&
+              selectedSemester &&
+              selectedSubject && (
+                <label className="font-semibold mb-2">
+                  Select Unit:
+                  <select
+                    value={selectedUnit}
+                    onChange={(e) => setSelectedUnit(e.target.value)}
+                    className="ml-2 p-2 border text-black border-gray-300 rounded"
+                  >
+                    <option value="">Select Unit</option>
+                    {loadingUnits ? (
+                      <option>Loading...</option>
+                    ) : (
+                      units.map((unit) => (
+                        <option key={unit.id} value={unit.id}>
+                          {unit.unitName}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </label>
+              )}
           </div>
 
           <div className="space-y-4">
@@ -595,6 +693,37 @@ const IntermediateList = () => {
               )}
             </div>
 
+            <div>
+              <h2 className="text-xl font-semibold mb-2">SEMESTERS</h2>
+              {loadingsemester ? (
+                <p>Loading...</p>
+              ) : (
+                semesters.map((subject) => (
+                  <div
+                    key={subject.id}
+                    className="flex items-center justify-between mb-2 p-2 border border-gray-300 rounded"
+                  >
+                    <span>{subject.semesterName}</span>
+                    <div>
+                      <button
+                        onClick={() =>
+                          handleEditClick("SEMESTERS", subject.id, subject)
+                        }
+                        className="mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSemester(subject.id)}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
             <div>
               <h2 className="text-xl font-semibold mb-2">Subjects</h2>
               {loadingSubjects ? (

@@ -7,8 +7,11 @@ import {
   FaTachometerAlt,
   FaInfoCircle,
   FaEnvelope,
+  FaStreetView,
   FaBars,
   FaTimes,
+  FaGraduationCap,
+  FaBookReader,
 } from "react-icons/fa"; // Importing icons
 
 const SideNav = () => {
@@ -61,37 +64,37 @@ const SideNav = () => {
       id: 2,
       name: "SSC list",
       path: "/dashboard/ssclist",
-      icon: <FaInfoCircle />, // About icon
+      icon: <FaBookReader />, // About icon
     },
     {
       id: 3,
       name: "InterForm",
       path: "/dashboard/interform",
-      icon: <FaEnvelope />, // Contact icon
+      icon: <FaStreetView />, // Contact icon
     },
     {
       id: 4,
       name: "SSC FORM",
       path: "/dashboard/classSubForm",
-      icon: <FaEnvelope />,
+      icon: <FaBookReader />,
     },
     {
       id: 5,
       name: "Inter List",
       path: "/dashboard/interlist",
-      icon: <FaEnvelope />,
+      icon: <FaStreetView />,
     },
     {
       id: 6,
       name: "Degree Form",
       path: "/dashboard/degreeform",
-      icon: <FaEnvelope />,
+      icon: <FaGraduationCap />,
     },
     {
       id: 7,
       name: "Degree List",
       path: "/dashboard/degreelist",
-      icon: <FaEnvelope />,
+      icon: <FaGraduationCap />,
     },
     {
       id: 8,

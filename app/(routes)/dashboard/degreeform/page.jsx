@@ -18,6 +18,7 @@ const IntermediateForm = () => {
   const [year, setYear] = useState("");
   const [courseName, setCourseName] = useState("");
   const [subjectName, setSubjectName] = useState("");
+  const [semesterName, setSemesterName] = useState("");
   const [unitName, setUnitName] = useState("");
   const [unitNumber, setUnitNumber] = useState("");
   const [unitImage, setUnitImage] = useState(null);
@@ -29,6 +30,8 @@ const IntermediateForm = () => {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [loading, setLoading] = useState(false);
+  const [semester, setSemester] = useState([]);
+  const [selectedSemester, setSelectedSemester] = useState("");
   const collectionname = "DEGREE";
 
   useEffect(() => {
@@ -63,12 +66,31 @@ const IntermediateForm = () => {
       setCourses([]);
     }
   }, [selectedYear]);
-
   useEffect(() => {
     if (selectedCourse) {
+      const semesterRef = collection(
+        db,
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters`
+      );
+      const unsubscribe = onSnapshot(semesterRef, (snapshot) => {
+        const semesterList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setSemester(semesterList);
+      });
+
+      return () => unsubscribe();
+    } else {
+      setSemester([]);
+    }
+  }, [selectedCourse, selectedYear]);
+
+  useEffect(() => {
+    if (selectedSemester) {
       const subjectRef = collection(
         db,
-        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects`
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects`
       );
       const unsubscribe = onSnapshot(subjectRef, (snapshot) => {
         const subjectList = snapshot.docs.map((doc) => ({
@@ -82,7 +104,7 @@ const IntermediateForm = () => {
     } else {
       setSubjects([]);
     }
-  }, [selectedCourse, selectedYear]);
+  }, [selectedSemester, selectedCourse, selectedYear]);
 
   const checkDuplicate = async (collectionPath, field, value) => {
     const q = query(collection(db, collectionPath), where(field, "==", value));
@@ -140,13 +162,48 @@ const IntermediateForm = () => {
       setLoading(false);
     }
   };
-
-  const handleSubjectSubmit = async (e) => {
+  const handleSemesterSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const duplicate = await checkDuplicate(
-        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects`,
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters`,
+        "semesterName",
+        semesterName
+      );
+      if (duplicate) {
+        toast.error("Semester already exists.");
+        return;
+      }
+
+      const semesterRef = collection(
+        db,
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters`
+      );
+      await addDoc(semesterRef, { semesterName });
+      toast.success("semester added successfully!");
+      setSemesterName("");
+    } catch (e) {
+      console.error("Error adding semester:", e);
+      toast.error("Failed to add semester.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleSubjectSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Check if any required fields are empty
+    if (!selectedYear || !selectedCourse || !selectedSemester || !subjectName) {
+      toast.error("Please fill out all required fields.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const duplicate = await checkDuplicate(
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects`,
         "subjectName",
         subjectName
       );
@@ -157,7 +214,7 @@ const IntermediateForm = () => {
 
       const subjectRef = collection(
         db,
-        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects`
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects`
       );
       await addDoc(subjectRef, { subjectName });
       toast.success("Subject added successfully!");
@@ -185,7 +242,7 @@ const IntermediateForm = () => {
     setLoading(true);
     try {
       const duplicate = await checkDuplicate(
-        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects/${selectedSubject}/units`,
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects/${selectedSubject}/units`,
         "unitName",
         unitName
       );
@@ -199,7 +256,7 @@ const IntermediateForm = () => {
 
       const unitRef = collection(
         db,
-        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects/${selectedSubject}/units`
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects/${selectedSubject}/units`
       );
       await addDoc(unitRef, {
         unitNumber,
@@ -210,6 +267,7 @@ const IntermediateForm = () => {
 
       toast.success("Unit added successfully!");
       setUnitNumber("");
+
       setUnitImage(null);
       setUnitName("");
       setUnitPdf(null);
@@ -232,211 +290,249 @@ const IntermediateForm = () => {
             <ClipLoader color="#4A90E2" loading={loading} size={50} />
           </div>
         )}
-        <h2 className="text-2xl font-bold mb-4">Add Year</h2>
+
+        {/* Year Section */}
+        <h2 className="text-2xl font-bold mb-4">Add university</h2>
         <form onSubmit={handleYearSubmit} className="space-y-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Year:
-              <input
-                type="text"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                required
-                className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
+          <label className="block text-sm font-medium text-white">
+            university
+            <input
+              type="text"
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md"
+            />
+          </label>
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full bg-indigo-600 text-white py-2"
           >
             Add Year
           </button>
         </form>
 
-        {/* Add Course */}
+        {/* Course Section */}
         <h2 className="text-2xl font-bold mb-4">Add Course</h2>
         <form onSubmit={handleCourseSubmit} className="space-y-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Select Year:
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                required
-                className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="" className="">
-                  Select a year
+          <label className="block text-sm font-medium text-white">
+            Select universty:
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            >
+              <option value="">Select a year</option>
+              {years.map((yr) => (
+                <option key={yr.id} value={yr.id}>
+                  {yr.name}
                 </option>
-                {years.map((yr) => (
-                  <option key={yr.id} value={yr.id}>
-                    {yr.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Course Name:
-              <input
-                type="text"
-                value={courseName}
-                onChange={(e) => setCourseName(e.target.value)}
-                required
-                className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
+              ))}
+            </select>
+          </label>
+
+          <label className="block text-sm font-medium text-white">
+            Course Name:
+            <input
+              type="text"
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg text-black pl-4 py-3"
+            />
+          </label>
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full bg-indigo-600 text-white py-2"
           >
             Add Course
           </button>
         </form>
 
-        {/* Add Subject */}
-        <h2 className="text-2xl font-bold mb-4">Add Subject</h2>
-        <form onSubmit={handleSubjectSubmit} className="space-y-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Select Year:
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                required
-                className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select a year</option>
-                {years.map((yr) => (
-                  <option key={yr.id} value={yr.id}>
-                    {yr.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Select Course:
-              <select
-                value={selectedCourse}
-                onChange={(e) => setSelectedCourse(e.target.value)}
-                required
-                className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select a course</option>
-                {courses.map((crs) => (
-                  <option key={crs.id} value={crs.id}>
-                    {crs.courseName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Subject Name:
-              <input
-                type="text"
-                value={subjectName}
-                onChange={(e) => setSubjectName(e.target.value)}
-                required
-                className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
+        {/* Semester Section */}
+        <h2 className="text-2xl font-bold mb-4">Add Semester</h2>
+        <form onSubmit={handleSemesterSubmit} className="space-y-4 mb-6">
+          {/* Select Year */}
+          <label className="block text-sm font-medium text-white">
+            Select university:
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            >
+              <option value="">Select a year</option>
+              {years.map((year) => (
+                <option key={year.id} value={year.id}>
+                  {year.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* Select Course */}
+          <label className="block text-sm font-medium text-white">
+            Select Course:
+            <select
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            >
+              <option value="">Select a course</option>
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.courseName}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* Enter Semester */}
+          <label className="block text-sm font-medium text-white">
+            Enter Semester:
+            <input
+              type="text"
+              value={semesterName}
+              onChange={(e) => setSemesterName(e.target.value)}
+              placeholder="Semester name (e.g., Semester 1)"
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            />
+          </label>
+
+          {/* Add Semester Button */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            disabled={loading}
+            className="mt-4 w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
           >
-            Add Subject
+            {loading ? "Adding..." : "Add Semester"}
           </button>
         </form>
 
-        {/* Add Unit */}
+        {/* Subject Section */}
+        <h2 className="text-2xl font-bold mb-4">Add Subject</h2>
+        <form onSubmit={handleSubjectSubmit} className="space-y-4 mb-6">
+          {/* Select Year */}
+          <label className="block text-sm font-medium text-white">
+            Select University:
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            >
+              <option value="">Select a year</option>
+              {years.map((year) => (
+                <option key={year.id} value={year.id}>
+                  {year.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* Select Course */}
+          <label className="block text-sm font-medium text-white">
+            Select Course:
+            <select
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            >
+              <option value="">Select a course</option>
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.courseName}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* Select Semester */}
+          <label className="block text-sm font-medium text-white">
+            Select Semester:
+            <select
+              value={selectedSemester}
+              onChange={(e) => setSelectedSemester(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            >
+              <option value="">Select a semester</option>
+              {semester?.map((sem) => (
+                <option key={sem.id} value={sem.id}>
+                  {sem.semesterName}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* Enter Subject */}
+          <label className="block text-sm font-medium text-white">
+            Subject Name:
+            <input
+              type="text"
+              value={subjectName}
+              onChange={(e) => setSubjectName(e.target.value)}
+              placeholder="Enter subject name"
+              required
+              className="mt-1 block w-full text-lg text-black pl-4 py-3"
+            />
+          </label>
+
+          {/* Add Subject Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white py-2"
+          >
+            {loading ? "Adding..." : "Add Subject"}
+          </button>
+        </form>
+
+        {/* Unit Section */}
         <h2 className="text-2xl font-bold mb-4">Add Unit</h2>
         <form onSubmit={handleUnitSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Select Year:
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                required
-                className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select a year</option>
-                {years.map((yr) => (
-                  <option key={yr.id} value={yr.id}>
-                    {yr.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Select Course:
-              <select
-                value={selectedCourse}
-                onChange={(e) => setSelectedCourse(e.target.value)}
-                required
-                className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select a course</option>
-                {courses.map((crs) => (
-                  <option key={crs.id} value={crs.id}>
-                    {crs.courseName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Select Subject:
-              <select
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-                required
-                className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="">Select a subject</option>
-                {subjects.map((subj) => (
-                  <option key={subj.id} value={subj.id}>
-                    {subj.subjectName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Unit Name:
-              <input
-                type="text"
-                value={unitName}
-                onChange={(e) => setUnitName(e.target.value)}
-                required
-                className="mt-1 block  w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Unit Number:
-              <input
-                type="text"
-                value={unitNumber}
-                onChange={(e) => setUnitNumber(e.target.value)}
-                required
-                className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
+          <label className="block text-sm font-medium text-white">
+            Select Subject:
+            <select
+              value={selectedSubject}
+              onChange={(e) => setSelectedSubject(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg pl-4 py-3 text-black"
+            >
+              <option value="">Select a subject</option>
+              {subjects.map((subj) => (
+                <option key={subj.id} value={subj.id}>
+                  {subj.subjectName}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block text-sm font-medium text-white">
+            Unit Name:
+            <input
+              type="text"
+              value={unitName}
+              onChange={(e) => setUnitName(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg text-black pl-4 py-3"
+            />
+          </label>
+
+          <label className="block text-sm font-medium text-white">
+            Unit Number:
+            <input
+              type="text"
+              value={unitNumber}
+              onChange={(e) => setUnitNumber(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg text-black pl-4 py-3"
+            />
+          </label>
           <div>
             <label className="block text-sm font-medium text-white">
               Unit Image:
@@ -462,7 +558,7 @@ const IntermediateForm = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full bg-indigo-600 text-white py-2"
           >
             Add Unit
           </button>
