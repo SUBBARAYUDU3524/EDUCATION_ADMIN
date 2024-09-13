@@ -2,6 +2,7 @@
 import React from "react";
 import SideNav from "./_components/SideNav";
 import DashboardHeader from "./_components/DashboardHeader";
+import { ItemProvider } from "@/app/ItemContext";
 
 const Dashboardlayout = ({ children }) => {
   return (
@@ -11,7 +12,8 @@ const Dashboardlayout = ({ children }) => {
       </div>
       <div className="md:ml-64">
         <DashboardHeader />
-        {children} {/* Pass collectionname to children */}
+        <ItemProvider>{children} </ItemProvider>
+        {/* Pass collectionname to children */}
       </div>
     </div>
   );

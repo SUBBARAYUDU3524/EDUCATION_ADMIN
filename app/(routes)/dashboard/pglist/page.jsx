@@ -128,7 +128,7 @@ const IntermediateList = () => {
           const snapshot = await getDocs(
             collection(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}subjects/${selectedSubject}/units`
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects/${selectedSubject}/units`
             )
           );
           setUnits(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
@@ -141,7 +141,7 @@ const IntermediateList = () => {
       fetchUnits();
     }
   }, [selectedSubject]);
-
+  console.log(units);
   // Function to delete a course and all its subjects
   const handleDeleteCourse = async (courseId) => {
     try {

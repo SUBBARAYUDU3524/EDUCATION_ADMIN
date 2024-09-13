@@ -128,7 +128,7 @@ const IntermediateList = () => {
           const snapshot = await getDocs(
             collection(
               db,
-              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}subjects/${selectedSubject}/units`
+              `${collectionname}/${selectedIntermediate}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects/${selectedSubject}/units`
             )
           );
           setUnits(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));

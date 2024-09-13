@@ -5,31 +5,33 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   FaTachometerAlt,
   FaEnvelope,
+  FaSignOutAlt,
   FaStreetView,
   FaBars,
   FaTimes,
   FaGraduationCap,
   FaBookReader,
-} from "react-icons/fa"; // Importing icons
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
 
 const SideNav = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null); // State to store the current user
+  const [currentUser, setCurrentUser] = useState(null);
+  const [openMenu, setOpenMenu] = useState(null); // To track which menu is open
   const router = useRouter();
   const path = usePathname();
 
   useEffect(() => {
-    // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setCurrentUser(user); // Set the current user when logged in
-        console.log("Current logged in user:", user); // Console the user object
+        setCurrentUser(user);
+        console.log("Current logged in user:", user);
       } else {
-        setCurrentUser(null); // Clear the user if logged out
+        setCurrentUser(null);
       }
     });
 
-    // Cleanup the listener on component unmount
     return () => unsubscribe();
   }, []);
 
@@ -42,12 +44,14 @@ const SideNav = () => {
     }
   };
 
+  const toggleMenu = (menuId) => {
+    setOpenMenu((prev) => (prev === menuId ? null : menuId)); // Only one menu remains open
+  };
+
   const handleLinkClick = (path) => {
-    // Close side navigation on small screens
     if (window.innerWidth < 768) {
       setIsOpen(false);
     }
-
     router.push(path);
   };
 
@@ -56,79 +60,136 @@ const SideNav = () => {
       id: 1,
       name: "Dashboard",
       path: "/dashboard",
-      icon: <FaTachometerAlt />, // Dashboard icon
+      icon: <FaTachometerAlt />,
     },
     {
       id: 2,
-      name: "SSC list",
-      path: "/dashboard/ssclist",
-      icon: <FaBookReader />, // About icon
+      name: "Reference Tables",
+      icon: openMenu === 2 ? <FaChevronUp /> : <FaChevronDown />,
+      children: [
+        {
+          id: 2.1,
+          name: "SSC Table",
+          path: "/dashboard/ssctable",
+          icon: <FaBookReader />,
+        },
+        {
+          id: 2.2,
+          name: "Inter Table",
+          path: "/dashboard/intertable",
+          icon: <FaStreetView />,
+        },
+        {
+          id: 2.3,
+          name: "BTech Table",
+          path: "/dashboard/btechtable",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 2.4,
+          name: "Degree Table",
+          path: "/dashboard/degreetable",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 2.5,
+          name: "PG Table",
+          path: "/dashboard/pgtable",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 2.6,
+          name: "Medical Table",
+          path: "/dashboard/medicaltable",
+          icon: <FaGraduationCap />,
+        },
+      ],
     },
     {
       id: 3,
-      name: "InterForm",
-      path: "/dashboard/interform",
-      icon: <FaStreetView />, // Contact icon
+      name: "Class Forms",
+      icon: openMenu === 4 ? <FaChevronUp /> : <FaChevronDown />,
+      children: [
+        {
+          id: 3.1,
+          name: "SSC Form",
+          path: "/dashboard/classSubForm",
+          icon: <FaBookReader />,
+        },
+        {
+          id: 3.2,
+          name: "Inter Form",
+          path: "/dashboard/interform",
+          icon: <FaStreetView />,
+        },
+        {
+          id: 3.3,
+          name: "BTech Form",
+          path: "/dashboard/btechform",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 3.4,
+          name: "Degree Form",
+          path: "/dashboard/degreeform",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 3.5,
+          name: "PG Form",
+          path: "/dashboard/pgform",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 3.6,
+          name: "Medical Form",
+          path: "/dashboard/medicalform",
+          icon: <FaGraduationCap />,
+        },
+      ],
     },
     {
       id: 4,
-      name: "SSC FORM",
-      path: "/dashboard/classSubForm",
-      icon: <FaBookReader />,
-    },
-    {
-      id: 5,
-      name: "Inter List",
-      path: "/dashboard/interlist",
-      icon: <FaStreetView />,
-    },
-    {
-      id: 6,
-      name: "Degree Form",
-      path: "/dashboard/degreeform",
-      icon: <FaGraduationCap />,
-    },
-    {
-      id: 7,
-      name: "Degree List",
-      path: "/dashboard/degreelist",
-      icon: <FaGraduationCap />,
-    },
-    {
-      id: 8,
-      name: "PG Form",
-      path: "/dashboard/pgform",
-      icon: <FaEnvelope />,
-    },
-    {
-      id: 9,
-      name: "PG List",
-      path: "/dashboard/pglist",
-      icon: <FaEnvelope />,
-    },
-    {
-      id: 10,
-      name: "BTech Form",
-      path: "/dashboard/btechform",
-      icon: <FaEnvelope />,
-    },
-    {
-      id: 11,
-      name: "BTech List",
-      path: "/dashboard/btechlist",
-      icon: <FaEnvelope />,
-    },
-    {
-      id: 12,
-      name: "Medical Form",
-      path: "/dashboard/medicalform",
-      icon: <FaEnvelope />,
-    },
-    {
-      id: 13,
-      name: "Medical List",
-      path: "/dashboard/medicallist",
-      icon: <FaEnvelope />,
+      name: "Class Lists",
+      icon: openMenu === 4 ? <FaChevronUp /> : <FaChevronDown />,
+      children: [
+        {
+          id: 4.1,
+          name: "SSC List",
+          path: "/dashboard/ssclist",
+          icon: <FaBookReader />,
+        },
+        {
+          id: 4.2,
+          name: "Inter List",
+          path: "/dashboard/interlist",
+          icon: <FaStreetView />,
+        },
+        {
+          id: 4.3,
+          name: "BTech List",
+          path: "/dashboard/btechlist",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 4.4,
+          name: "Degree List",
+          path: "/dashboard/degreelist",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 4.5,
+          name: "PG List",
+          path: "/dashboard/pglist",
+          icon: <FaGraduationCap />,
+        },
+        {
+          id: 4.6,
+          name: "Medical List",
+          path: "/dashboard/medicallist",
+          icon: <FaGraduationCap />,
+        },
+      ],
     },
   ];
 
@@ -153,7 +214,7 @@ const SideNav = () => {
         {/* Logo and Company Name */}
         <div className="flex items-center gap-2 p-4 pt-14 pl-10 md:pt-4 md:pl-0 md:pr-0 lg:pl-6 lg:pr-6">
           <img
-            src="https://img1.hscicdn.com/image/upload/f_auto,t_ds_w_1200,q_50/lsci/db/PICTURES/CMS/385700/385739.jpg" // Add your logo image here
+            src="https://img1.hscicdn.com/image/upload/f_auto,t_ds_w_1200,q_50/lsci/db/PICTURES/CMS/385700/385739.jpg"
             alt="Logo"
             className="w-10 h-10"
           />
@@ -162,12 +223,14 @@ const SideNav = () => {
 
         {/* Navigation Menu */}
         <ul className="mt-4 pl-10 pr-10 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0 overflow-y-auto h-auto scrollbar-hide">
-          {" "}
-          {/* Added overflow and height */}
           {menuList.map((item) => (
             <li key={item.id} className="mb-4">
               <button
-                onClick={() => handleLinkClick(item.path)}
+                onClick={() =>
+                  item.children
+                    ? toggleMenu(item.id)
+                    : handleLinkClick(item.path)
+                }
                 className={`flex items-center gap-2 p-2 rounded hover:bg-gray-700 ${
                   path === item.path ? "bg-gray-700 font-bold" : ""
                 } w-full text-left`}
@@ -175,35 +238,57 @@ const SideNav = () => {
                 <span className="text-lg">{item.icon}</span>
                 <span>{item.name}</span>
               </button>
+
+              {/* Submenu with transition */}
+              {item.children && (
+                <ul
+                  className={`pl-4 mt-2 overflow-hidden transition-all duration-300 ${
+                    openMenu === item.id
+                      ? "max-h-96 opacity-100"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  {item.children.map((child) => (
+                    <li key={child.id} className="mb-2">
+                      <button
+                        onClick={() => handleLinkClick(child.path)}
+                        className={`flex items-center gap-2 p-2 rounded hover:bg-gray-700 ${
+                          path === child.path ? "bg-gray-700 font-bold" : ""
+                        } w-full text-left`}
+                      >
+                        <span className="text-lg">{child.icon}</span>
+                        <span>{child.name}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
 
         {/* Profile Section Above Logout */}
         <div className="mt-auto">
-          <div className="flex items-center gap-4 p-4 border-t border-gray-700">
+          <div className="flex items-center gap-2 px-4 py-3 border-t border-gray-600">
             <img
-              src={currentUser?.photoURL || "/profile.jpg"} // Display user's profile picture or a default one
-              alt="Profile"
+              src={currentUser?.photoURL || "https://via.placeholder.com/40"}
+              alt="User Profile"
               className="w-10 h-10 rounded-full"
             />
-            <div>
-              <p className="font-bold">{currentUser?.displayName || "Guest"}</p>
-              <p className="text-sm text-gray-400">
-                {currentUser?.email || "guest@example.com"}
+            <div className="text-sm">
+              <span>{currentUser?.displayName || "Guest User"}</span>
+              <p className="text-xs text-gray-400">
+                {currentUser?.email || ""}
               </p>
             </div>
           </div>
-
-          {/* Logout Button */}
-          <div className="p-4">
-            <button
-              onClick={handleLogout}
-              className="w-full bg-red-500 hover:bg-red-600 text-white p-2 rounded transition duration-200"
-            >
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="w-full text-left flex items-center gap-2 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded mt-2"
+          >
+            <FaSignOutAlt />
+            <span className="pl-8">Logout</span>
+          </button>
         </div>
       </div>
     </div>

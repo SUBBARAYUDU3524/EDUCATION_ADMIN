@@ -323,7 +323,7 @@ const IntermediateForm = () => {
               required
               className="mt-1 block w-full text-lg pl-4 py-3 text-black"
             >
-              <option value="">Select a year</option>
+              <option value="">Select a University</option>
               {years.map((yr) => (
                 <option key={yr.id} value={yr.id}>
                   {yr.name}
@@ -362,7 +362,7 @@ const IntermediateForm = () => {
               required
               className="mt-1 block w-full text-lg pl-4 py-3 text-black"
             >
-              <option value="">Select a year</option>
+              <option value="">Select a University</option>
               {years.map((year) => (
                 <option key={year.id} value={year.id}>
                   {year.name}

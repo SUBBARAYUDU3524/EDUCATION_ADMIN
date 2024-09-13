@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   collection,
   onSnapshot,
@@ -11,78 +11,39 @@ import {
 import { ref, deleteObject } from "firebase/storage";
 import toast, { Toaster } from "react-hot-toast";
 import { db, storage } from "@/app/FirebaseConfig";
+import ItemContext from "@/app/ItemContext";
 
 const ClassSubjectList = () => {
-  const [classes, setClasses] = useState([]);
-  const [subjects, setSubjects] = useState([]);
-  const [units, setUnits] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [loadingClasses, setLoadingClasses] = useState(true);
-  const [loadingSubjects, setLoadingSubjects] = useState(false);
-  const [loadingUnits, setLoadingUnits] = useState(false);
+
   const [loadingEdit, setLoadingEdit] = useState(false); // Loading state for edit
   const [editing, setEditing] = useState({ type: "", id: "", data: {} });
   const [showEditModal, setShowEditModal] = useState(false); // Show/hide modal
-
+  const {
+    classes,
+    subjects,
+    units,
+    loadingClasses,
+    loadingSubjects,
+    loadingUnits,
+    fetchClasses,
+    fetchSubjects,
+    fetchUnits,
+  } = useContext(ItemContext);
   // Fetch classes from Firestore
   useEffect(() => {
-    setLoadingClasses(true);
-    const classRef = collection(db, "SSC");
-    const unsubscribe = onSnapshot(classRef, (snapshot) => {
-      const classList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setClasses(classList);
-      setLoadingClasses(false);
-    });
-
-    return () => unsubscribe();
+    fetchClasses();
   }, []);
-
+  console.log(subjects);
   // Fetch subjects for the selected class
   useEffect(() => {
-    if (selectedClass) {
-      setLoadingSubjects(true);
-      const subjectRef = collection(db, `SSC/${selectedClass}/subjects`);
-      const unsubscribe = onSnapshot(subjectRef, (snapshot) => {
-        const subjectList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setSubjects(subjectList);
-        setLoadingSubjects(false);
-      });
-
-      return () => unsubscribe();
-    } else {
-      setSubjects([]);
-      setUnits([]); // Clear units when no subject is selected
-    }
+    fetchSubjects(selectedClass);
   }, [selectedClass]);
 
   // Fetch units for the selected subject
   useEffect(() => {
-    if (selectedClass && selectedSubject) {
-      setLoadingUnits(true);
-      const unitRef = collection(
-        db,
-        `SSC/${selectedClass}/subjects/${selectedSubject}/units`
-      );
-      const unsubscribe = onSnapshot(unitRef, (snapshot) => {
-        const unitList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setUnits(unitList);
-        setLoadingUnits(false);
-      });
-
-      return () => unsubscribe();
-    } else {
-      setUnits([]);
-    }
+    fetchUnits(selectedClass, selectedSubject);
   }, [selectedClass, selectedSubject]);
 
   // Delete a class from Firestore
@@ -300,7 +261,7 @@ const ClassSubjectList = () => {
           {loadingSubjects ? (
             <p>Loading subjects...</p>
           ) : (
-            subjects.map((sub) => (
+            subjects?.map((sub) => (
               <div
                 key={sub.id}
                 className="flex justify-between items-center my-2"
