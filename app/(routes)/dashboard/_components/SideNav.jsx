@@ -191,6 +191,44 @@ const SideNav = () => {
         },
       ],
     },
+    {
+      id: 5,
+      name: "Notification",
+      icon: openMenu === 4 ? <FaChevronUp /> : <FaChevronDown />,
+      children: [
+        {
+          id: 5.1,
+          name: "Job Notification",
+          path: "/dashboard/jobnotification",
+          icon: <FaBookReader />,
+        },
+        {
+          id: 5.2,
+          name: "Exam Notificationist",
+          path: "/dashboard/examnotification",
+          icon: <FaStreetView />,
+        },
+      ],
+    },
+    {
+      id: 6,
+      name: "Notifications Tables",
+      icon: openMenu === 4 ? <FaChevronUp /> : <FaChevronDown />,
+      children: [
+        {
+          id: 6.1,
+          name: "Job Notifications Table",
+          path: "/dashboard/jobnotificationtable",
+          icon: <FaBookReader />,
+        },
+        {
+          id: 6.2,
+          name: "Exam Notifications Table",
+          path: "/dashboard/examnotificationtable",
+          icon: <FaStreetView />,
+        },
+      ],
+    },
   ];
 
   return (
