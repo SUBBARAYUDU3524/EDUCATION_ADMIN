@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { db, storage } from "@/app/FirebaseConfig";
+import { db, storage } from "@/app/FirebaseConfig"; // Ensure your firebase configuration is correct
 import {
   collection,
   addDoc,
@@ -14,12 +14,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 
-const BtechForm = ({ collectionname }) => {
+const InterPreviousPaperForms = ({ collectionname }) => {
   const [year, setYear] = useState("");
-  const [semesterName, setSemesterName] = useState("");
+  const [courseName, setCourseName] = useState("");
   const [subjectName, setSubjectName] = useState("");
-  const [unitName, setUnitName] = useState("");
-  const [unitNumber, setUnitNumber] = useState("");
   const [unitImage, setUnitImage] = useState(null);
   const [unitPdf, setUnitPdf] = useState(null);
   const [years, setYears] = useState([]);
@@ -31,11 +29,6 @@ const BtechForm = ({ collectionname }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!collectionname) {
-      console.error("Error: collectionname is undefined or empty");
-      return;
-    }
-
     const yearRef = collection(db, collectionname);
     const unsubscribe = onSnapshot(yearRef, (snapshot) => {
       const yearList = snapshot.docs.map((doc) => ({
@@ -46,13 +39,13 @@ const BtechForm = ({ collectionname }) => {
     });
 
     return () => unsubscribe();
-  }, [collectionname]);
+  }, []);
 
   useEffect(() => {
-    if (selectedYear && collectionname) {
+    if (selectedYear) {
       const courseRef = collection(
         db,
-        `${collectionname}/${selectedYear}/semesters`
+        `${collectionname}/${selectedYear}/courses`
       );
       const unsubscribe = onSnapshot(courseRef, (snapshot) => {
         const courseList = snapshot.docs.map((doc) => ({
@@ -66,13 +59,13 @@ const BtechForm = ({ collectionname }) => {
     } else {
       setCourses([]);
     }
-  }, [selectedYear, collectionname]);
+  }, [selectedYear]);
 
   useEffect(() => {
-    if (selectedCourse && selectedYear && collectionname) {
+    if (selectedCourse) {
       const subjectRef = collection(
         db,
-        `${collectionname}/${selectedYear}/semesters/${selectedCourse}/subjects`
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects`
       );
       const unsubscribe = onSnapshot(subjectRef, (snapshot) => {
         const subjectList = snapshot.docs.map((doc) => ({
@@ -86,7 +79,7 @@ const BtechForm = ({ collectionname }) => {
     } else {
       setSubjects([]);
     }
-  }, [selectedCourse, selectedYear, collectionname]);
+  }, [selectedCourse, selectedYear]);
 
   const checkDuplicate = async (collectionPath, field, value) => {
     const q = query(collection(db, collectionPath), where(field, "==", value));
@@ -100,17 +93,17 @@ const BtechForm = ({ collectionname }) => {
     try {
       const duplicate = await checkDuplicate(collectionname, "name", year);
       if (duplicate) {
-        toast.error("Group already exists.");
+        toast.error("Year already exists.");
         return;
       }
 
       const yearRef = collection(db, collectionname);
       await addDoc(yearRef, { name: year });
-      toast.success("Group added successfully!");
+      toast.success("Year added successfully!");
       setYear("");
     } catch (e) {
-      console.error("Error adding Group:", e);
-      toast.error("Failed to add Group.");
+      console.error("Error adding year:", e);
+      toast.error("Failed to add year.");
     } finally {
       setLoading(false);
     }
@@ -121,25 +114,25 @@ const BtechForm = ({ collectionname }) => {
     setLoading(true);
     try {
       const duplicate = await checkDuplicate(
-        `${collectionname}/${selectedYear}/semesters`,
-        "semesterName",
-        semesterName
+        `${collectionname}/${selectedYear}/courses`,
+        "courseName",
+        courseName
       );
       if (duplicate) {
-        toast.error("Semester already exists.");
+        toast.error("Course already exists.");
         return;
       }
 
       const courseRef = collection(
         db,
-        `${collectionname}/${selectedYear}/semesters`
+        `${collectionname}/${selectedYear}/courses`
       );
-      await addDoc(courseRef, { semesterName });
-      toast.success("semester added successfully!");
-      setSemesterName("");
+      await addDoc(courseRef, { courseName });
+      toast.success("Course added successfully!");
+      setCourseName("");
     } catch (e) {
-      console.error("Error adding semester:", e);
-      toast.error("Failed to add semester.");
+      console.error("Error adding course:", e);
+      toast.error("Failed to add course.");
     } finally {
       setLoading(false);
     }
@@ -150,7 +143,7 @@ const BtechForm = ({ collectionname }) => {
     setLoading(true);
     try {
       const duplicate = await checkDuplicate(
-        `${collectionname}/${selectedYear}/semesters/${selectedCourse}/subjects`,
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects`,
         "subjectName",
         subjectName
       );
@@ -161,7 +154,7 @@ const BtechForm = ({ collectionname }) => {
 
       const subjectRef = collection(
         db,
-        `${collectionname}/${selectedYear}/semesters/${selectedCourse}/subjects`
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects`
       );
       await addDoc(subjectRef, { subjectName });
       toast.success("Subject added successfully!");
@@ -188,34 +181,20 @@ const BtechForm = ({ collectionname }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const duplicate = await checkDuplicate(
-        `${collectionname}/${selectedYear}/semesters/${selectedCourse}/subjects/${selectedSubject}/units`,
-        "unitName",
-        unitName
-      );
-      if (duplicate) {
-        toast.error("Unit already exists.");
-        return;
-      }
-
       const unitImageUrl = await handleFileUpload(unitImage, "unitImages");
       const unitPdfLink = await handleFileUpload(unitPdf, "unitPdfs");
 
       const unitRef = collection(
         db,
-        `${collectionname}/${selectedYear}/semesters/${selectedCourse}/subjects/${selectedSubject}/units`
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects/${selectedSubject}/units`
       );
       await addDoc(unitRef, {
-        unitNumber,
         unitImageUrl,
         unitPdfLink,
-        unitName,
       });
 
       toast.success("Unit added successfully!");
-      setUnitNumber("");
       setUnitImage(null);
-      setUnitName("");
       setUnitPdf(null);
     } catch (e) {
       console.error("Error adding unit:", e);
@@ -224,7 +203,6 @@ const BtechForm = ({ collectionname }) => {
       setLoading(false);
     }
   };
-
   return (
     <div>
       <h1 className="text-3xl text-center mt-10 underline">
@@ -238,11 +216,11 @@ const BtechForm = ({ collectionname }) => {
             <ClipLoader color="#4A90E2" loading={loading} size={50} />
           </div>
         )}
-        <h2 className="text-2xl font-bold mb-4">Add Group</h2>
+        <h2 className="text-2xl font-bold mb-4">Add Year</h2>
         <form onSubmit={handleYearSubmit} className="space-y-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-white">
-              Group:
+              Year:
               <input
                 type="text"
                 value={year}
@@ -256,16 +234,16 @@ const BtechForm = ({ collectionname }) => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 px-4 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            Add Group
+            Add Year
           </button>
         </form>
 
         {/* Add Course */}
-        <h2 className="text-2xl font-bold mb-4">Add Semester</h2>
+        <h2 className="text-2xl font-bold mb-4">Add Course</h2>
         <form onSubmit={handleCourseSubmit} className="space-y-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-white">
-              Select Group:
+              Select Year:
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
@@ -273,7 +251,7 @@ const BtechForm = ({ collectionname }) => {
                 className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="" className="">
-                  Select a Group
+                  Select a year
                 </option>
                 {years.map((yr) => (
                   <option key={yr.id} value={yr.id}>
@@ -285,11 +263,11 @@ const BtechForm = ({ collectionname }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-white">
-              Semester Name:
+              Course Name:
               <input
                 type="text"
-                value={semesterName}
-                onChange={(e) => setSemesterName(e.target.value)}
+                value={courseName}
+                onChange={(e) => setCourseName(e.target.value)}
                 required
                 className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -299,7 +277,7 @@ const BtechForm = ({ collectionname }) => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 px-4 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            Add Semester
+            Add Course
           </button>
         </form>
 
@@ -308,14 +286,14 @@ const BtechForm = ({ collectionname }) => {
         <form onSubmit={handleSubjectSubmit} className="space-y-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-white">
-              Select Group:
+              Select Year:
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
                 required
                 className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               >
-                <option value="">Select a Group</option>
+                <option value="">Select a year</option>
                 {years.map((yr) => (
                   <option key={yr.id} value={yr.id}>
                     {yr.name}
@@ -326,17 +304,17 @@ const BtechForm = ({ collectionname }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-white">
-              Select Semester:
+              Select Course:
               <select
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
                 required
                 className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               >
-                <option value="">Select a semester</option>
+                <option value="">Select a course</option>
                 {courses.map((crs) => (
                   <option key={crs.id} value={crs.id}>
-                    {crs.semesterName}
+                    {crs.courseName}
                   </option>
                 ))}
               </select>
@@ -367,14 +345,14 @@ const BtechForm = ({ collectionname }) => {
         <form onSubmit={handleUnitSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-white">
-              Select Group:
+              Select Year:
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
                 required
                 className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               >
-                <option value="">Select Group</option>
+                <option value="">Select a year</option>
                 {years.map((yr) => (
                   <option key={yr.id} value={yr.id}>
                     {yr.name}
@@ -385,17 +363,17 @@ const BtechForm = ({ collectionname }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-white">
-              Select Semester:
+              Select Course:
               <select
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
                 required
                 className="mt-1 block text-black w-full text-lg pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               >
-                <option value="">Select a Semester</option>
+                <option value="">Select a course</option>
                 {courses.map((crs) => (
                   <option key={crs.id} value={crs.id}>
-                    {crs.semesterName}
+                    {crs.courseName}
                   </option>
                 ))}
               </select>
@@ -419,30 +397,7 @@ const BtechForm = ({ collectionname }) => {
               </select>
             </label>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Unit Name:
-              <input
-                type="text"
-                value={unitName}
-                onChange={(e) => setUnitName(e.target.value)}
-                required
-                className="mt-1 block  w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Unit Number:
-              <input
-                type="text"
-                value={unitNumber}
-                onChange={(e) => setUnitNumber(e.target.value)}
-                required
-                className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
+
           <div>
             <label className="block text-sm font-medium text-white">
               Unit Image:
@@ -478,4 +433,4 @@ const BtechForm = ({ collectionname }) => {
   );
 };
 
-export default BtechForm;
+export default InterPreviousPaperForms;

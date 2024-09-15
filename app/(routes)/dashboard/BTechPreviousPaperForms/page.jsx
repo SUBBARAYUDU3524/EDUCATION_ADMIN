@@ -14,7 +14,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 
-const BtechForm = ({ collectionname }) => {
+const BTechPreviousPaperForms = ({ collectionname }) => {
   const [year, setYear] = useState("");
   const [semesterName, setSemesterName] = useState("");
   const [subjectName, setSubjectName] = useState("");
@@ -206,10 +206,8 @@ const BtechForm = ({ collectionname }) => {
         `${collectionname}/${selectedYear}/semesters/${selectedCourse}/subjects/${selectedSubject}/units`
       );
       await addDoc(unitRef, {
-        unitNumber,
         unitImageUrl,
         unitPdfLink,
-        unitName,
       });
 
       toast.success("Unit added successfully!");
@@ -419,30 +417,7 @@ const BtechForm = ({ collectionname }) => {
               </select>
             </label>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Unit Name:
-              <input
-                type="text"
-                value={unitName}
-                onChange={(e) => setUnitName(e.target.value)}
-                required
-                className="mt-1 block  w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white">
-              Unit Number:
-              <input
-                type="text"
-                value={unitNumber}
-                onChange={(e) => setUnitNumber(e.target.value)}
-                required
-                className="mt-1 block w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </label>
-          </div>
+
           <div>
             <label className="block text-sm font-medium text-white">
               Unit Image:
@@ -478,4 +453,4 @@ const BtechForm = ({ collectionname }) => {
   );
 };
 
-export default BtechForm;
+export default BTechPreviousPaperForms;
