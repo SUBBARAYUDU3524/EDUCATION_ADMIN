@@ -125,7 +125,7 @@ const SideNav = () => {
         {
           id: 3.3,
           name: "BTech Form",
-          path: "/dashboard/BtechForm/BTechTextBookForm",
+          path: "/dashboard/BTechForms/BTechTextbook",
           icon: <FaGraduationCap />,
         },
         {
@@ -143,7 +143,7 @@ const SideNav = () => {
         {
           id: 3.6,
           name: "Medical Form",
-          path: "/dashboard/BtechForm/MedicalTextBookForm",
+          path: "/dashboard/BTechForms/MedicalTextbook",
           icon: <FaGraduationCap />,
         },
       ],
@@ -249,7 +249,7 @@ const SideNav = () => {
         {
           id: 7.3,
           name: "BTech Workbook",
-          path: "/dashboard/BtechForm/BtechWorkBookForm",
+          path: "/dashboard/BTechForms/BTechWorkbook",
           icon: <FaGraduationCap />,
         },
         {
@@ -267,7 +267,7 @@ const SideNav = () => {
         {
           id: 7.6,
           name: "Medical Workbook",
-          path: "/dashboard/BtechForm/MedicalWorkBookForm",
+          path: "/dashboard/BTechForms/MedicalWorkbook",
           icon: <FaGraduationCap />,
         },
       ],
