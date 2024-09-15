@@ -58,7 +58,7 @@ const SchoolTable = () => {
     fetchData();
   }, []);
 
-  // Loading spinner
+  // Loading spinnerererer
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
