@@ -125,7 +125,7 @@ const SideNav = () => {
         {
           id: 3.3,
           name: "BTech Form",
-          path: "/dashboard/BtechForm/BtechTextBookForm",
+          path: "/dashboard/BtechForm/BTechTextBookForm",
           icon: <FaGraduationCap />,
         },
         {
