@@ -1,26 +1,31 @@
 "use client";
 
-import { db } from "@/app/FirebaseConfig";
+import { auth, db } from "@/app/FirebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // For navigation
 import { HashLoader } from "react-spinners"; // Import the loader
+import ItemContext from "@/app/ItemContext";
 
 const SSCTables = ({ collectionName }) => {
+  const { setUnitId, setClassId, setSubjectId } = useContext(ItemContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state
-
+  const router = useRouter(); // For navigation
+  const currentUser = auth.currentUser;
+  const currentUserId = currentUser?.uid;
+  console.log(data);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true); // Start loading
       try {
-        // Fetch classes from the collection
         const sscRef = collection(db, collectionName);
         const classSnapshot = await getDocs(sscRef);
         const classData = [];
 
-        // Loop through each class document
         for (const classDoc of classSnapshot.docs) {
-          const className = classDoc.data().name || classDoc.id; // Fallback to id if name doesn't exist
+          const className = classDoc.data().name || classDoc.id;
+          const classId = classDoc.id; // Fallback to id if name doesn't exist
           const subjectsRef = collection(
             db,
             `${collectionName}/${classDoc.id}/subjects`
@@ -28,9 +33,9 @@ const SSCTables = ({ collectionName }) => {
           const subjectsSnapshot = await getDocs(subjectsRef);
           const subjectsData = [];
 
-          // Loop through each subject document
           for (const subjectDoc of subjectsSnapshot.docs) {
-            const subjectName = subjectDoc.data().subjectName || subjectDoc.id; // Fallback to id if subjectName doesn't exist
+            const subjectName = subjectDoc.data().subjectName || subjectDoc.id;
+            const subjectId = subjectDoc.id;
             const unitsRef = collection(
               db,
               `${collectionName}/${classDoc.id}/subjects/${subjectDoc.id}/units`
@@ -38,16 +43,19 @@ const SSCTables = ({ collectionName }) => {
             const unitsSnapshot = await getDocs(unitsRef);
             const unitsData = unitsSnapshot.docs.map((unitDoc) => ({
               ...unitDoc.data(),
+              unitId: unitDoc.id,
             }));
 
             subjectsData.push({
               subject: subjectName,
+              subjectId: subjectId,
               units: unitsData,
             });
           }
 
           classData.push({
             className: className,
+            classId: classId,
             subjects: subjectsData,
           });
         }
@@ -63,7 +71,15 @@ const SSCTables = ({ collectionName }) => {
     if (collectionName) {
       fetchData(); // Only fetch if collectionName is valid
     }
-  }, [collectionName]); // Add collectionName as dependency
+  }, [collectionName]);
+
+  // Function to handle navigation to AddQuiz
+  const handleAddQuiz = (unitId, classId, subjectId) => {
+    setUnitId(unitId);
+    setClassId(classId);
+    setSubjectId(subjectId);
+    router.push("/dashboard/addQuiz");
+  };
 
   // Loading spinner
   if (loading) {
@@ -102,6 +118,9 @@ const SSCTables = ({ collectionName }) => {
               <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
                 Unit PDF
               </th>
+              <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
+                Quiz
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -111,36 +130,31 @@ const SSCTables = ({ collectionName }) => {
                   <tr
                     key={`${classItem.className}-${subjectItem.subject}-${unit.unitNumber}`}
                   >
-                    {/* Class */}
                     {unitIndex === 0 && subjectIndex === 0 && (
                       <td
                         rowSpan={classItem.subjects.reduce(
                           (acc, subj) => acc + subj.units.length,
                           0
                         )}
-                        className="border border-gray-300 px-4 py-2 font-medium "
+                        className="border border-gray-300 px-4 py-2 font-medium"
                       >
                         {classItem.className}
                       </td>
                     )}
-                    {/* Subject */}
                     {unitIndex === 0 && (
                       <td
                         rowSpan={subjectItem.units.length}
-                        className="border border-gray-300 px-4 py-2 font-medium "
+                        className="border border-gray-300 px-4 py-2 font-medium"
                       >
                         {subjectItem.subject}
                       </td>
                     )}
-                    {/* Unit Number */}
                     <td className="border border-gray-300 px-4 py-2">
                       {unit.unitNumber}
                     </td>
-                    {/* Unit Name */}
                     <td className="border border-gray-300 px-4 py-2">
                       {unit.unitName}
                     </td>
-                    {/* Unit Images */}
                     <td className="border border-gray-300 px-4 py-2">
                       {unit.unitImageUrl ? (
                         <div className="flex items-center space-x-4">
@@ -162,7 +176,6 @@ const SSCTables = ({ collectionName }) => {
                         "No Image Available"
                       )}
                     </td>
-                    {/* Unit PDF */}
                     <td className="border border-gray-300 px-4 py-2">
                       {unit.unitPdfLink ? (
                         <a
@@ -176,6 +189,21 @@ const SSCTables = ({ collectionName }) => {
                       ) : (
                         "No PDF Available"
                       )}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        onClick={
+                          () =>
+                            handleAddQuiz(
+                              unit?.unitId,
+                              classItem?.classId,
+                              subjectItem?.subjectId
+                            ) // Pass all three ids
+                        }
+                      >
+                        Add Quiz
+                      </button>
                     </td>
                   </tr>
                 ))

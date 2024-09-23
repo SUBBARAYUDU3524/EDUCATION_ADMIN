@@ -14,6 +14,9 @@ export const ItemProvider = ({ children }) => {
   const [loadingClasses, setLoadingClasses] = useState(false);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
   const [loadingUnits, setLoadingUnits] = useState(false);
+  const [unitId, setUnitId] = useState("");
+  const [classId, setClassId] = useState("");
+  const [subjectId, setSubjectId] = useState("");
 
   // Fetch classes
   const fetchClasses = () => {
@@ -87,6 +90,12 @@ export const ItemProvider = ({ children }) => {
         fetchClasses,
         fetchSubjects,
         fetchUnits,
+        unitId,
+        setUnitId,
+        subjectId,
+        setClassId,
+        setSubjectId,
+        classId,
       }}
     >
       {children}
