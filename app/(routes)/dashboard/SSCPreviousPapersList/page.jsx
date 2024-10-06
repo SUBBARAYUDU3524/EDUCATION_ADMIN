@@ -342,7 +342,7 @@ const SSCPreviousPapersList = () => {
 
         {/* Unit Selection and Display */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold">Units</h3>
+          <h3 className="text-lg font-semibold">Previous Paper Year</h3>
           <select
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
@@ -364,8 +364,10 @@ const SSCPreviousPapersList = () => {
                 className="flex justify-between items-center my-2"
               >
                 <div>
-                  <h4 className="font-semibold">{unit.unitName}</h4>
-                  <p>Unit Number: {unit.unitNumber}</p>
+                  <h3 className="font-semibold">
+                    Prev_Paper_Year : {unit.unitName}
+                  </h3>
+
                   {unit.unitImageUrl && (
                     <img
                       src={unit.unitImageUrl}

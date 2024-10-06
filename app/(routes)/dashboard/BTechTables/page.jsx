@@ -1,15 +1,19 @@
 "use client";
 
 import { db } from "@/app/FirebaseConfig"; // Firebase config
+import ItemContext from "@/app/ItemContext";
 import { collection, getDocs } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState, useContext } from "react";
 import { HashLoader } from "react-spinners"; // For loading spinner
 
 const BTechTables = ({ collectionName }) => {
+  const { setUniversityId, setSemesterId, setSubjectId, setUnitId } =
+    useContext(ItemContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true); // For loading state
   const [error, setError] = useState(null); // For error handling
-
+  const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -60,11 +64,16 @@ const BTechTables = ({ collectionName }) => {
 
               // Loop through each unit and prepare data for the table
               unitsSnapshot.docs.forEach((unitDoc) => {
+                const unitId = unitDoc.id;
                 const unitData = unitDoc.data();
                 degreeData.push({
                   name,
                   semesterName,
                   subjectName,
+                  universityId,
+                  unitId,
+                  semesterId,
+                  subjectId,
                   unitNumber: unitData.unitNumber || "N/A",
                   unitName: unitData.unitName || "N/A",
                   unitImageUrl: unitData.unitImageUrl || null,
@@ -87,6 +96,22 @@ const BTechTables = ({ collectionName }) => {
 
     fetchData();
   }, []);
+
+  const handleAddQuiz = (unitId, universityId, subjectId, semesterId) => {
+    setUnitId(unitId);
+    setSubjectId(subjectId);
+    setSemesterId(semesterId);
+    setUniversityId(universityId);
+    router.push("/dashboard/BTechQuiz");
+  };
+
+  const handleViewQuiz = (unitId, universityId, subjectId, semesterId) => {
+    setUnitId(unitId);
+    setSubjectId(subjectId);
+    setSemesterId(semesterId);
+    setUniversityId(universityId);
+    router.push("/dashboard/BTechQuizList");
+  };
 
   if (loading) {
     return (
@@ -157,6 +182,9 @@ const BTechTables = ({ collectionName }) => {
                   <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
                     Unit PDF
                   </th>
+                  <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
+                    Quizzes
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -209,6 +237,34 @@ const BTechTables = ({ collectionName }) => {
                       ) : (
                         "No PDF available"
                       )}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-3"
+                        onClick={() =>
+                          handleAddQuiz(
+                            item.unitId,
+                            item.universityId,
+                            item.subjectId,
+                            item.semesterId
+                          )
+                        }
+                      >
+                        Add Quiz
+                      </button>
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-3"
+                        onClick={() =>
+                          handleViewQuiz(
+                            item.unitId,
+                            item.universityId,
+                            item.subjectId,
+                            item.semesterId
+                          )
+                        }
+                      >
+                        View Quiz
+                      </button>
                     </td>
                   </tr>
                 ))}

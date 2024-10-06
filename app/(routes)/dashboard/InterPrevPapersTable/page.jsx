@@ -117,7 +117,7 @@ const IntermedPrevPapersTable = () => {
       </h1>
 
       <div className="overflow-x-auto p-6">
-        <table className="min-w-full text-left border-collapse border border-gray-300 shadow-md">
+        <table className="min-w-full text-center  border-collapse border border-gray-300 shadow-md">
           <thead className="bg-gray-100">
             <tr>
               <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
@@ -135,6 +135,9 @@ const IntermedPrevPapersTable = () => {
               </th>
               <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
                 Unit PDF
+              </th>
+              <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
+                Prev_Paper_Year
               </th>
             </tr>
           </thead>
@@ -189,6 +192,10 @@ const IntermedPrevPapersTable = () => {
                     ) : (
                       "No PDF available"
                     )}
+                  </td>
+
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.unitName}
                   </td>
                 </tr>
               ))

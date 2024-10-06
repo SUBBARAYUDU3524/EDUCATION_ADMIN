@@ -427,13 +427,13 @@ const SideNav = () => {
         {
           id: 11.4,
           name: "Degree List",
-          path: "/dashboard/DegreeLists/DegreeWorkBookList",
+          path: "/dashboard/DegreePreviousPaperLists/DegreePapersList",
           icon: <FaGraduationCap />,
         },
         {
           id: 11.5,
           name: "PG List",
-          path: "/dashboard/DegreeLists/PGWorkBookList",
+          path: "/dashboard/DegreePreviousPaperLists/PGPapersList",
           icon: <FaGraduationCap />,
         },
         {

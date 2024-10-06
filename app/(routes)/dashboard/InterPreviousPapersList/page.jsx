@@ -609,7 +609,9 @@ const InterPreviousPapersList = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold mb-2">Units</h2>
+              <h2 className="text-xl font-semibold mb-2">
+                Previous Paper Image & Year
+              </h2>
               {loadingUnits ? (
                 <p>Loading...</p>
               ) : (

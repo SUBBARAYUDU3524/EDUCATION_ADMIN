@@ -14,7 +14,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 
-const DegreePreviousPaperForms = ({ collectionName }) => {
+const AddToCollection = ({ collectionName }) => {
   const [year, setYear] = useState("");
   const [courseName, setCourseName] = useState("");
   const [subjectName, setSubjectName] = useState("");
@@ -274,8 +274,10 @@ const DegreePreviousPaperForms = ({ collectionName }) => {
         `${collectionName}/${selectedYear}/courses/${selectedCourse}/semesters/${selectedSemester}/subjects/${selectedSubject}/units`
       );
       await addDoc(unitRef, {
+        unitNumber,
         unitImageUrl,
         unitPdfLink,
+        unitName,
       });
 
       toast.success("Unit added successfully!");
@@ -508,7 +510,7 @@ const DegreePreviousPaperForms = ({ collectionName }) => {
         </form>
 
         {/* Unit Section */}
-        <h2 className="text-2xl font-bold mb-4">Add Unit</h2>
+        <h2 className="text-2xl font-bold mb-4">Add Previous Paper Year</h2>
         <form onSubmit={handleUnitSubmit} className="space-y-4">
           <label className="block text-sm font-medium text-white">
             Select Subject:
@@ -527,9 +529,19 @@ const DegreePreviousPaperForms = ({ collectionName }) => {
             </select>
           </label>
 
+          <label className="block text-sm font-medium text-white">
+            Previous Paper Year:
+            <input
+              type="text"
+              value={unitNumber}
+              onChange={(e) => setUnitNumber(e.target.value)}
+              required
+              className="mt-1 block w-full text-lg text-black pl-4 py-3"
+            />
+          </label>
           <div>
             <label className="block text-sm font-medium text-white">
-              Unit Image:
+              Previous Paper Image:
               <input
                 type="file"
                 accept="image/*"
@@ -540,7 +552,7 @@ const DegreePreviousPaperForms = ({ collectionName }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-white">
-              Unit PDF:
+              Previous Paper PDF:
               <input
                 type="file"
                 onChange={(e) => setUnitPdf(e.target.files[0])}
@@ -554,7 +566,7 @@ const DegreePreviousPaperForms = ({ collectionName }) => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-2"
           >
-            Add Unit
+            Add Previous Papers
           </button>
         </form>
       </div>
@@ -562,4 +574,4 @@ const DegreePreviousPaperForms = ({ collectionName }) => {
   );
 };
 
-export default DegreePreviousPaperForms;
+export default AddToCollection;

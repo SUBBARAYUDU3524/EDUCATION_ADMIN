@@ -18,20 +18,24 @@ const AddQuiz = () => {
   const currentUserId = auth.currentUser?.uid;
   const {
     unitId: contextUnitId,
-    classId: contextClassId,
     subjectId: contextSubjectId,
+    courseId: contextCourseId, // Added
+    yearId: contextYearId, // Added
   } = useContext(ItemContext);
-
   // Set initial state values from localStorage or context
   const [unitId, setUnitId] = useState(
     localStorage.getItem("unitId") || contextUnitId
   );
-  const [classId, setClassId] = useState(
-    localStorage.getItem("classId") || contextClassId
-  );
+
   const [subjectId, setSubjectId] = useState(
     localStorage.getItem("subjectId") || contextSubjectId
   );
+  const [courseId, setCourseId] = useState(
+    localStorage.getItem("courseId") || contextCourseId
+  ); // New state
+  const [yearId, setYearId] = useState(
+    localStorage.getItem("yearId") || contextYearId
+  ); // New state
   const [quizTitle, setQuizTitle] = useState("");
   const [questions, setQuestions] = useState([
     {
@@ -42,6 +46,8 @@ const AddQuiz = () => {
       isVisible: false, // State for question visibility
     },
   ]);
+  console.log(yearId);
+
   const [loading, setLoading] = useState(false);
   const [quizOptions, setQuizOptions] = useState([]);
   const [selectedQuizId, setSelectedQuizId] = useState("");
@@ -59,11 +65,18 @@ const AddQuiz = () => {
   }, [contextUnitId, unitId]);
 
   useEffect(() => {
-    if (contextClassId !== classId) {
-      setClassId(contextClassId);
-      localStorage.setItem("classId", contextClassId);
+    if (contextYearId !== yearId) {
+      setClassId(contextYearId);
+      localStorage.setItem("yearId", contextYearId);
     }
-  }, [contextClassId, classId]);
+  }, [contextYearId, yearId]);
+
+  useEffect(() => {
+    if (contextCourseId !== courseId) {
+      setClassId(contextCourseId);
+      localStorage.setItem("courseId", contextCourseId);
+    }
+  }, [contextCourseId, courseId]);
 
   useEffect(() => {
     if (contextSubjectId !== subjectId) {
@@ -72,14 +85,29 @@ const AddQuiz = () => {
     }
   }, [contextSubjectId, subjectId]);
 
-  // Fetch quizzes when classId, subjectId, or unitId changes
+  // New useEffect hooks for courseId and yearId
+  useEffect(() => {
+    if (contextCourseId !== courseId) {
+      setCourseId(contextCourseId);
+      localStorage.setItem("courseId", contextCourseId);
+    }
+  }, [contextCourseId, courseId]);
+
+  useEffect(() => {
+    if (contextYearId !== yearId) {
+      setYearId(contextYearId);
+      localStorage.setItem("yearId", contextYearId);
+    }
+  }, [contextYearId, yearId]);
+
+  // Fetch quizzes when identifiers change
   useEffect(() => {
     const fetchQuizzes = async () => {
-      if (classId && subjectId && unitId) {
+      if (yearId && courseId && subjectId && unitId) {
         try {
           const quizzesCollectionRef = collection(
             db,
-            `SSC_QUIZ/${classId}/subjects/${subjectId}/units/${unitId}/quizzes`
+            `INTERMEDIATE_QUIZ/${yearId}/courses/${courseId}/subjects/${subjectId}/units/${unitId}/quizzes`
           );
           const quizzesSnapshot = await getDocs(quizzesCollectionRef);
 
@@ -95,7 +123,8 @@ const AddQuiz = () => {
       }
     };
     fetchQuizzes();
-  }, [classId, subjectId, unitId]);
+  }, [yearId, courseId, subjectId, unitId]);
+
   const handleQuizChange = async (e) => {
     const quizId = e.target.value;
     setSelectedQuizId(quizId);
@@ -103,7 +132,7 @@ const AddQuiz = () => {
       try {
         const quizDocRef = doc(
           db,
-          `SSC_QUIZ/${classId}/subjects/${subjectId}/units/${unitId}/quizzes`,
+          `INTERMEDIATE_QUIZ/${yearId}/courses/${courseId}/subjects/${subjectId}/units/${unitId}/quizzes`,
           quizId
         );
         const quizDoc = await getDoc(quizDocRef);
@@ -171,13 +200,13 @@ const AddQuiz = () => {
 
       // Create a new quiz document for the user
       await setDoc(quizDocRef, {
-        classId,
+        yearId,
+        courseId,
         subjectId,
         unitId,
         quizTitle,
-
         questions: [],
-        quizNumber: inputQuizNumber, // <-- Ensure quizNumber is correctly set here
+        quizNumber: inputQuizNumber,
         responseSheet: [],
         createdBy: currentUserId,
         createdAt: new Date(),
@@ -191,7 +220,7 @@ const AddQuiz = () => {
 
       // Set both newQuizNumber and selectedQuizId to the input value
       setNewQuizNumber(inputQuizNumber);
-      setSelectedQuizId(inputQuizNumber); // Ensure selectedQuizId is also set
+      setSelectedQuizId(inputQuizNumber);
       setInputQuizNumber(""); // Reset input field
 
       toast.success("New quiz number added successfully.");
@@ -205,7 +234,7 @@ const AddQuiz = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!classId || !subjectId || !unitId || !quizTitle) {
+    if (!yearId || !courseId || !subjectId || !unitId || !quizTitle) {
       setLoading(false);
       toast.error(
         "Missing required fields. Please ensure all fields are filled out."
@@ -214,7 +243,7 @@ const AddQuiz = () => {
     }
 
     try {
-      // Check whether a quiz number is available in inputQuizNumber, newQuizNumber, or selectedQuizId
+      // Determine the quiz number
       const quizNumber = inputQuizNumber || newQuizNumber || selectedQuizId;
 
       if (!quizNumber) {
@@ -226,19 +255,20 @@ const AddQuiz = () => {
       const quizData = {
         quizTitle,
         questions,
-        quizNumber, // <-- Correctly set quizNumber
+        quizNumber,
         createdBy: currentUserId,
-        classId,
+        yearId,
+        courseId,
         subjectId,
-        responseSheet: [],
         unitId,
+        responseSheet: [],
         createdAt: new Date(),
       };
 
       const quizDocRef = doc(
         db,
-        `SSC_QUIZ/${classId}/subjects/${subjectId}/units/${unitId}/quizzes`,
-        quizNumber // Use quizNumber here
+        `INTERMEDIATE_QUIZ/${yearId}/courses/${courseId}/subjects/${subjectId}/units/${unitId}/quizzes`,
+        quizNumber
       );
 
       if (newQuizNumber) {
@@ -254,7 +284,7 @@ const AddQuiz = () => {
       const userQuizDocRef = doc(
         db,
         `QUIZ_USERS/${currentUserId}/quizzes`,
-        quizNumber // Use the correct quiz number here
+        quizNumber
       );
       await updateDoc(userQuizDocRef, { questions: quizData.questions });
 
@@ -279,6 +309,7 @@ const AddQuiz = () => {
       toast.error("Failed to save quiz. Please try again.");
     }
   };
+
   const handleDeleteQuiz = async (quizId) => {
     const confirmDelete = window.confirm(
       `Are you sure you want to delete quiz ${quizId}?`
@@ -286,10 +317,10 @@ const AddQuiz = () => {
 
     if (confirmDelete) {
       try {
-        // Reference to the quiz document in SSC_QUIZ collection
+        // Reference to the quiz document in the main collection
         const quizDocRefSSC = doc(
           db,
-          `SSC_QUIZ/${classId}/subjects/${subjectId}/units/${unitId}/quizzes`,
+          `INTERMEDIATE_QUIZ/${yearId}/courses/${courseId}/subjects/${subjectId}/units/${unitId}/quizzes`,
           quizId
         );
 
@@ -311,7 +342,7 @@ const AddQuiz = () => {
           prevOptions.filter((quiz) => quiz.id !== quizId)
         );
 
-        // Optional: Reset the selected quiz if the deleted quiz was selected
+        // Reset the selected quiz if it was deleted
         if (selectedQuizId === quizId) {
           setSelectedQuizId("");
           setQuizTitle("");
@@ -340,6 +371,7 @@ const AddQuiz = () => {
     updatedQuestions[index].isVisible = !updatedQuestions[index].isVisible;
     setQuestions(updatedQuestions);
   };
+
   const handleDeleteQuestion = async () => {
     if (questionToDelete !== null && questionToDelete >= 0) {
       try {
@@ -359,7 +391,7 @@ const AddQuiz = () => {
         // Reference to the quiz document in Firestore
         const quizDocRef = doc(
           db,
-          `SSC_QUIZ/${classId}/subjects/${subjectId}/units/${unitId}/quizzes`,
+          `INTERMEDIATE_QUIZ/${yearId}/courses/${courseId}/subjects/${subjectId}/units/${unitId}/quizzes`,
           quizId
         );
 

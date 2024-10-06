@@ -65,6 +65,7 @@ const BTechPrevPaperTables = ({ collectionName }) => {
                   name,
                   semesterName,
                   subjectName,
+                  unitNumber: unitData.unitNumber,
                   unitImageUrl: unitData.unitImageUrl || null,
                   unitPdfLink: unitData.unitPdfLink || null,
                 });
@@ -125,7 +126,7 @@ const BTechPrevPaperTables = ({ collectionName }) => {
         {collectionName} TABLE
       </h1>
 
-      <div className="overflow-x-auto p-6">
+      <div className="overflow-x-auto p-6 text-center">
         {Object.keys(groupedData).map((universityName, index) => (
           <div key={index} className="mb-8">
             {/* University/Branch Name */}
@@ -145,14 +146,17 @@ const BTechPrevPaperTables = ({ collectionName }) => {
                   </th>
 
                   <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
-                    Unit Image
+                    Previous Paper Image
                   </th>
                   <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
-                    Unit PDF
+                    Previous Paper PDF
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
+                    Previous Paper Year
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="text-center">
                 {groupedData[universityName].map((item, idx) => (
                   <tr key={idx}>
                     <td className="border border-gray-300 px-4 py-2">
@@ -197,6 +201,9 @@ const BTechPrevPaperTables = ({ collectionName }) => {
                       ) : (
                         "No PDF available"
                       )}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {item.unitNumber}
                     </td>
                   </tr>
                 ))}

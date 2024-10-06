@@ -14,10 +14,12 @@ import toast, { Toaster } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 
-const InterPreviousPaperForms = ({ collectionname }) => {
+const IntermediateForms = ({ collectionname }) => {
   const [year, setYear] = useState("");
   const [courseName, setCourseName] = useState("");
   const [subjectName, setSubjectName] = useState("");
+  const [unitName, setUnitName] = useState("");
+  const [unitNumber, setUnitNumber] = useState("");
   const [unitImage, setUnitImage] = useState(null);
   const [unitPdf, setUnitPdf] = useState(null);
   const [years, setYears] = useState([]);
@@ -181,6 +183,16 @@ const InterPreviousPaperForms = ({ collectionname }) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const duplicate = await checkDuplicate(
+        `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects/${selectedSubject}/units`,
+        "unitName",
+        unitName
+      );
+      if (duplicate) {
+        toast.error("Unit already exists.");
+        return;
+      }
+
       const unitImageUrl = await handleFileUpload(unitImage, "unitImages");
       const unitPdfLink = await handleFileUpload(unitPdf, "unitPdfs");
 
@@ -189,12 +201,16 @@ const InterPreviousPaperForms = ({ collectionname }) => {
         `${collectionname}/${selectedYear}/courses/${selectedCourse}/subjects/${selectedSubject}/units`
       );
       await addDoc(unitRef, {
+        unitNumber,
         unitImageUrl,
         unitPdfLink,
+        unitName,
       });
 
       toast.success("Unit added successfully!");
+      setUnitNumber("");
       setUnitImage(null);
+      setUnitName("");
       setUnitPdf(null);
     } catch (e) {
       console.error("Error adding unit:", e);
@@ -203,6 +219,7 @@ const InterPreviousPaperForms = ({ collectionname }) => {
       setLoading(false);
     }
   };
+
   return (
     <div>
       <h1 className="text-3xl text-center mt-10 underline">
@@ -397,10 +414,22 @@ const InterPreviousPaperForms = ({ collectionname }) => {
               </select>
             </label>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-white">
+              Previous Paper Year:
+              <input
+                type="text"
+                value={unitName}
+                onChange={(e) => setUnitName(e.target.value)}
+                required
+                className="mt-1 block  w-full text-lg text-black pl-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </label>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-white">
-              Unit Image:
+              Previous Paper Image:
               <input
                 type="file"
                 accept="image/*"
@@ -411,7 +440,7 @@ const InterPreviousPaperForms = ({ collectionname }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-white">
-              Unit PDF:
+              Previous Paper PDF:
               <input
                 type="file"
                 onChange={(e) => setUnitPdf(e.target.files[0])}
@@ -425,7 +454,7 @@ const InterPreviousPaperForms = ({ collectionname }) => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 px-4 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            Add Unit
+            Add Previous Paper
           </button>
         </form>
       </div>
@@ -433,4 +462,4 @@ const InterPreviousPaperForms = ({ collectionname }) => {
   );
 };
 
-export default InterPreviousPaperForms;
+export default IntermediateForms;

@@ -23,6 +23,7 @@ const SSCQuizTable = () => {
           const quizSnapshot = await getDocs(quizzesRef);
           const quizzes = quizSnapshot.docs.map((doc) => ({
             id: doc.id,
+
             ...doc.data(),
           }));
 

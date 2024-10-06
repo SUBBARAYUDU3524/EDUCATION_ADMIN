@@ -611,7 +611,9 @@ const BTechPreviousPaperLists = ({ collectionname }) => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold mb-2">Units</h2>
+              <h2 className="text-xl font-semibold mb-2">
+                Previous paper Image & Year
+              </h2>
               {loadingUnits ? (
                 <p>Loading...</p>
               ) : (
@@ -629,7 +631,7 @@ const BTechPreviousPaperLists = ({ collectionname }) => {
                           className="w-16 h-16 object-cover mr-4 rounded" // Adjust size and style as needed
                         />
                       )}
-                      <span>{unit.unitName}</span>
+                      <span>{unit.unitNumber}</span>
                     </div>
                     <div className="flex items-center">
                       {/* View PDF Button */}

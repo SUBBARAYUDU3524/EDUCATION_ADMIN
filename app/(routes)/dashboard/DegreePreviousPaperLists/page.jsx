@@ -514,13 +514,13 @@ const DegreePreviousPaperLists = ({ collectionname }) => {
         <div className="space-y-4">
           <div className="flex flex-col mb-4">
             <label className="font-semibold mb-2">
-              Select Degree:
+              Select University:
               <select
                 value={selectedIntermediate}
                 onChange={(e) => setSelectedIntermediate(e.target.value)}
                 className="ml-2 p-2 border text-black border-gray-300 rounded"
               >
-                <option value="">Select Degree</option>
+                <option value="">Select University</option>
                 {loadingIntermediates ? (
                   <option>Loading...</option>
                 ) : (
@@ -597,31 +597,6 @@ const DegreePreviousPaperLists = ({ collectionname }) => {
                 </select>
               </label>
             )}
-
-            {selectedIntermediate &&
-              selectedCourse &&
-              selectedSemester &&
-              selectedSubject && (
-                <label className="font-semibold mb-2">
-                  Select Unit:
-                  <select
-                    value={selectedUnit}
-                    onChange={(e) => setSelectedUnit(e.target.value)}
-                    className="ml-2 p-2 border text-black border-gray-300 rounded"
-                  >
-                    <option value="">Select Unit</option>
-                    {loadingUnits ? (
-                      <option>Loading...</option>
-                    ) : (
-                      units.map((unit) => (
-                        <option key={unit.id} value={unit.id}>
-                          {unit.unitName}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </label>
-              )}
           </div>
 
           <div className="space-y-4">
@@ -759,7 +734,9 @@ const DegreePreviousPaperLists = ({ collectionname }) => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold mb-2">Units</h2>
+              <h2 className="text-xl font-semibold mb-2">
+                Prev_Paper_Image & Year
+              </h2>
               {loadingUnits ? (
                 <p>Loading...</p>
               ) : (
@@ -777,7 +754,7 @@ const DegreePreviousPaperLists = ({ collectionname }) => {
                           className="w-16 h-16 object-cover mr-4 rounded" // Adjust size and style as needed
                         />
                       )}
-                      <span>{unit.unitName}</span>
+                      <span>{unit.unitNumber}</span>
                     </div>
                     <div className="flex items-center">
                       {/* View PDF Button */}

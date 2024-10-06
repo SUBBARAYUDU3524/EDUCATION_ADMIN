@@ -1,7 +1,7 @@
 import DegreePreviousPaperLists from "../page";
 
 const AddToNameCollection = () => {
-  return <DegreePreviousPaperLists collectionName="PG_PREVIOUS_PAPERS" />;
+  return <DegreePreviousPaperLists collectionname="PG_PREVIOUS_PAPERS" />;
 };
 
 export default AddToNameCollection;

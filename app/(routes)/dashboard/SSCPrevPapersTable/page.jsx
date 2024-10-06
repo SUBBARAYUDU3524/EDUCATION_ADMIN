@@ -92,10 +92,10 @@ const SSCPrevPapersTable = () => {
               </th>
 
               <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
-                Unit Images
+                Previous Paper Images
               </th>
               <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
-                Unit PDF
+                Previous Paper PDF
               </th>
             </tr>
           </thead>

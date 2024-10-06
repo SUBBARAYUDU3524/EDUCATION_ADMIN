@@ -1,15 +1,19 @@
 "use client";
 
 import { db } from "@/app/FirebaseConfig"; // Import your Firebase config
+import ItemContext from "@/app/ItemContext";
 import { collection, getDocs } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useContext, useEffect, useState } from "react";
 import { HashLoader } from "react-spinners"; // For loading spinner
 
 const IntermediateTables = ({ collectionName }) => {
+  const { setUnitId, setYearId, setCourseId, setSubjectId } =
+    useContext(ItemContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const router = useRouter();
   const groupDataByYear = (data) => {
     return data.reduce((acc, item) => {
       if (!acc[item.year]) {
@@ -19,7 +23,6 @@ const IntermediateTables = ({ collectionName }) => {
       return acc;
     }, {});
   };
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -32,7 +35,7 @@ const IntermediateTables = ({ collectionName }) => {
 
         for (const yearDoc of intermediateSnapshot.docs) {
           const yearName = yearDoc.data().name || "N/A";
-
+          const yearId = yearDoc.id;
           const coursesRef = collection(
             db,
             `${collectionName}/${yearDoc.id}/courses`
@@ -41,7 +44,7 @@ const IntermediateTables = ({ collectionName }) => {
 
           for (const courseDoc of coursesSnapshot.docs) {
             const courseName = courseDoc.data().courseName || "N/A";
-
+            const courseId = courseDoc.id;
             const subjectsRef = collection(
               db,
               `${collectionName}/${yearDoc.id}/courses/${courseDoc.id}/subjects`
@@ -50,7 +53,7 @@ const IntermediateTables = ({ collectionName }) => {
 
             for (const subjectDoc of subjectsSnapshot.docs) {
               const subjectName = subjectDoc.data().subjectName || "N/A";
-
+              const subjectId = subjectDoc.id;
               const unitsRef = collection(
                 db,
                 `${collectionName}/${yearDoc.id}/courses/${courseDoc.id}/subjects/${subjectDoc.id}/units`
@@ -61,10 +64,14 @@ const IntermediateTables = ({ collectionName }) => {
                 const unitData = unitDoc.data();
                 intermediateData.push({
                   year: yearName,
+                  yearId,
+                  courseId,
+                  subjectId,
                   course: courseName,
                   subject: subjectName,
                   unitName: unitData.unitName || "N/A",
                   unitNumber: unitData.unitNumber || "N/A",
+                  unitId: unitDoc.id, // Firestore ID as unitId
                   unitImageUrl: unitData.unitImageUrl || null,
                   unitPdfLink: unitData.unitPdfLink || null,
                 });
@@ -84,6 +91,22 @@ const IntermediateTables = ({ collectionName }) => {
 
     fetchData();
   }, []);
+
+  const handleAddQuiz = (unitId, year, courseId, subjectId) => {
+    setUnitId(unitId);
+    setYearId(year); // Use year instead of yearId if that's how it's structured
+    setSubjectId(subjectId);
+    setCourseId(courseId);
+    router.push("/dashboard/InterQuiz");
+  };
+
+  const handleViewQuiz = (unitId, year, courseId, subjectId) => {
+    setUnitId(unitId);
+    setYearId(year); // Use year instead of yearId if that's how it's structured
+    setSubjectId(subjectId);
+    setCourseId(courseId);
+    router.push("/dashboard/interQuizList");
+  };
 
   if (loading) {
     return (
@@ -139,6 +162,9 @@ const IntermediateTables = ({ collectionName }) => {
               </th>
               <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
                 Unit PDF
+              </th>
+              <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
+                Quizzes
               </th>
             </tr>
           </thead>
@@ -198,6 +224,34 @@ const IntermediateTables = ({ collectionName }) => {
                     ) : (
                       "No PDF available"
                     )}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-3"
+                      onClick={() =>
+                        handleAddQuiz(
+                          item.unitId,
+                          courses[courseIndex].courseId, // Pass courseId from course data
+                          item.subjectId, // Pass subjectId from item data
+                          year // Pass yearId from the current year
+                        )
+                      }
+                    >
+                      Add Quiz
+                    </button>
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-3"
+                      onClick={() =>
+                        handleViewQuiz(
+                          item.unitId,
+                          courses[courseIndex].courseId, // Pass courseId from course data
+                          item.subjectId, // Pass subjectId from item data
+                          year // Pass yearId from the current year
+                        )
+                      }
+                    >
+                      View Quiz
+                    </button>
                   </td>
                 </tr>
               ))

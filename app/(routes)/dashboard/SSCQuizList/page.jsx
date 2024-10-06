@@ -55,7 +55,7 @@ const SSCQuizTable = () => {
             <th className="px-4 py-2 border">Correct Option</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-white bg-black text-center">
           {quizzesData.length === 0 ? (
             <tr>
               <td colSpan={4} className="text-center py-4 text-gray-600">

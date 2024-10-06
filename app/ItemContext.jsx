@@ -15,8 +15,13 @@ export const ItemProvider = ({ children }) => {
   const [loadingSubjects, setLoadingSubjects] = useState(false);
   const [loadingUnits, setLoadingUnits] = useState(false);
   const [unitId, setUnitId] = useState("");
+  const [yearId, setYearId] = useState("");
   const [classId, setClassId] = useState("");
   const [subjectId, setSubjectId] = useState("");
+  const [courseId, setCourseId] = useState("");
+  const [universityId, setUniversityId] = useState("");
+  const [semesterId, setSemesterId] = useState("");
+  const [indexx, setIndexx] = useState();
 
   // Fetch classes
   const fetchClasses = () => {
@@ -95,7 +100,17 @@ export const ItemProvider = ({ children }) => {
         subjectId,
         setClassId,
         setSubjectId,
+        yearId,
+        setYearId,
         classId,
+        courseId,
+        setCourseId,
+        universityId,
+        setUniversityId,
+        semesterId,
+        setSemesterId,
+        indexx,
+        setIndexx,
       }}
     >
       {children}

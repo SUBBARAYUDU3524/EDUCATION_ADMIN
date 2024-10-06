@@ -80,6 +80,19 @@ const SSCTables = ({ collectionName }) => {
     setSubjectId(subjectId);
     router.push("/dashboard/addQuiz");
   };
+  const handleViewQuiz = (unitId, classId, subjectId) => {
+    setUnitId(unitId);
+    setClassId(classId);
+    setSubjectId(subjectId);
+    router.push("/dashboard/SSCQuizList");
+  };
+
+  const handlePlayQuiz = (unitId, classId, subjectId) => {
+    setUnitId(unitId);
+    setClassId(classId);
+    setSubjectId(subjectId);
+    router.push("/dashboard/sscquizzes");
+  };
 
   // Loading spinner
   if (loading) {
@@ -192,7 +205,7 @@ const SSCTables = ({ collectionName }) => {
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        className="bg-blue-500  text-white px-4 py-2 rounded hover:bg-blue-600 mr-3"
                         onClick={
                           () =>
                             handleAddQuiz(
@@ -203,6 +216,32 @@ const SSCTables = ({ collectionName }) => {
                         }
                       >
                         Add Quiz
+                      </button>
+                      <button
+                        className="bg-blue-500  text-white px-4 py-2 rounded hover:bg-blue-600 ml-3"
+                        onClick={
+                          () =>
+                            handleViewQuiz(
+                              unit?.unitId,
+                              classItem?.classId,
+                              subjectItem?.subjectId
+                            ) // Pass all three ids
+                        }
+                      >
+                        View Quiz
+                      </button>
+                      <button
+                        className="bg-blue-500  text-white px-4 py-2 rounded hover:bg-blue-600 ml-3"
+                        onClick={
+                          () =>
+                            handlePlayQuiz(
+                              unit?.unitId,
+                              classItem?.classId,
+                              subjectItem?.subjectId
+                            ) // Pass all three ids
+                        }
+                      >
+                        Quiz
                       </button>
                     </td>
                   </tr>

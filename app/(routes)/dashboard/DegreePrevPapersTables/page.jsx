@@ -85,6 +85,7 @@ const DegreePrevPapersTables = ({ collectionName }) => {
                     courseName,
                     semesterName,
                     subjectName,
+                    unitNumber: unitData.unitNumber,
                     unitImageUrl: unitData.unitImageUrl || null,
                     unitPdfLink: unitData.unitPdfLink || null,
                   });
@@ -143,7 +144,9 @@ const DegreePrevPapersTables = ({ collectionName }) => {
       <div className="overflow-x-auto p-6">
         {Object.keys(data).map((universityName, index) => (
           <div key={index} className="mb-8">
-            <h2 className="text-xl font-bold mb-4">{universityName}</h2>
+            <h2 className="text-xl font-bold mb-4">
+              University Name:{universityName}
+            </h2>
             <table className="min-w-full text-left border-collapse border border-gray-300 shadow-md">
               <thead className="bg-gray-100">
                 <tr>
@@ -158,10 +161,13 @@ const DegreePrevPapersTables = ({ collectionName }) => {
                   </th>
 
                   <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
-                    Unit Image
+                    Previous Paper Image
                   </th>
                   <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
-                    Unit PDF
+                    Previous Paper PDF
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
+                    Previous Paper Year
                   </th>
                 </tr>
               </thead>
@@ -213,6 +219,9 @@ const DegreePrevPapersTables = ({ collectionName }) => {
                       ) : (
                         "No PDF available"
                       )}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {item.unitNumber}
                     </td>
                   </tr>
                 ))}

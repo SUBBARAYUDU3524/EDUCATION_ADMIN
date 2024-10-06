@@ -14,8 +14,11 @@ import { ClipLoader } from "react-spinners";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 import { db, storage } from "@/app/FirebaseConfig";
 
-const SSCPreviousPaperForms = ({ collectionName }) => {
+const SSCForms = ({ collectionName }) => {
+  const [className, setClassName] = useState("");
   const [subjectName, setSubjectName] = useState("");
+  const [unitName, setUnitName] = useState("");
+  const [unitNumber, setUnitNumber] = useState("");
   const [unitImage, setUnitImage] = useState(null); // Update to handle file object
   const [unitPdf, setUnitPdf] = useState(null); // Update to handle file object
   const [classes, setClasses] = useState([]);
@@ -25,22 +28,20 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (collectionName) {
-      const classRef = collection(db, collectionName);
-      const unsubscribe = onSnapshot(classRef, (snapshot) => {
-        const classList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setClasses(classList);
-      });
+    const classRef = collection(db, collectionName);
+    const unsubscribe = onSnapshot(classRef, (snapshot) => {
+      const classList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setClasses(classList);
+    });
 
-      return () => unsubscribe();
-    }
-  }, [collectionName]);
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
-    if (selectedClass && collectionName) {
+    if (selectedClass) {
       const subjectRef = collection(
         db,
         `${collectionName}/${selectedClass}/subjects`
@@ -57,30 +58,40 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
     } else {
       setSubjects([]);
     }
-  }, [selectedClass, collectionName]);
+  }, [selectedClass]);
 
   const checkDuplicate = async (collectionPath, field, value) => {
-    if (!collectionPath) {
-      return false; // If collection path is empty, skip the check
-    }
     const q = query(collection(db, collectionPath), where(field, "==", value));
     const querySnapshot = await getDocs(q);
     return !querySnapshot.empty; // If there's at least one document, return true (indicating duplicate)
+  };
+
+  const handleClassSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const duplicate = await checkDuplicate(collectionName, "name", className);
+      if (duplicate) {
+        toast.error("Class already exists.");
+        return;
+      }
+
+      const classRef = collection(db, collectionName);
+      await addDoc(classRef, { name: className });
+      toast.success("Class added successfully!");
+      setClassName("");
+    } catch (e) {
+      console.error("Error adding class:", e);
+      toast.error("Failed to add class.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubjectSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (!selectedClass) {
-        toast.error("Please select a class first.");
-        return;
-      }
-      if (!subjectName) {
-        toast.error("Subject name cannot be empty.");
-        return;
-      }
-
       const duplicate = await checkDuplicate(
         `${collectionName}/${selectedClass}/subjects`,
         "subjectName",
@@ -120,8 +131,13 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (!selectedClass || !selectedSubject) {
-        toast.error("Please select both class and subject.");
+      const duplicate = await checkDuplicate(
+        `${collectionName}/${selectedClass}/subjects/${selectedSubject}/units`,
+        "unitName",
+        unitName
+      );
+      if (duplicate) {
+        toast.error("Unit already exists.");
         return;
       }
 
@@ -133,12 +149,16 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
         `${collectionName}/${selectedClass}/subjects/${selectedSubject}/units`
       );
       await addDoc(unitRef, {
+        unitNumber,
         unitImageUrl,
         unitPdfLink,
+        unitName,
       });
 
       toast.success("Unit added successfully!");
+      setUnitNumber("");
       setUnitImage(null);
+      setUnitName("");
       setUnitPdf(null);
     } catch (e) {
       console.error("Error adding unit:", e);
@@ -160,6 +180,27 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
             <ClipLoader color="#4A90E2" loading={loading} size={50} />
           </div>
         )}
+        <h2 className="text-3xl font-bold mb-4">Add Class</h2>
+        <form onSubmit={handleClassSubmit} className="space-y-6 mb-8">
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Class Name:
+              <input
+                type="text"
+                value={className}
+                onChange={(e) => setClassName(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Add Class
+          </button>
+        </form>
 
         <h2 className="text-3xl font-bold mb-4">Add Subject</h2>
         <form onSubmit={handleSubjectSubmit} className="space-y-6 mb-8">
@@ -201,7 +242,7 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
           </button>
         </form>
 
-        <h2 className="text-3xl font-bold mb-4">Add Unit</h2>
+        <h2 className="text-3xl font-bold mb-4">Add Previous Paper Year</h2>
         <form onSubmit={handleUnitSubmit} className="space-y-6">
           <div>
             <label className="block text-lg font-medium text-white">
@@ -223,7 +264,20 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-white">
-              Unit Image:
+              Previous Paper Year:
+              <input
+                type="text"
+                value={unitName}
+                onChange={(e) => setUnitName(e.target.value)}
+                required
+                className="mt-2 block w-full text-lg px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              />
+            </label>
+          </div>
+
+          <div>
+            <label className="block text-lg font-medium text-white">
+              Previous Paper Image:
               <input
                 type="file"
                 accept="image/*"
@@ -233,13 +287,13 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
             </label>
           </div>
           <div>
-            <label className="block text-lg font-medium text-white">
-              Unit PDF:
+            <label className="block text-lg font-medium text-white ">
+              Previous Paper PDF:
               <input
                 type="file"
                 accept="application/pdf"
                 onChange={(e) => setUnitPdf(e.target.files[0])}
-                className="mt-2 block w-full text-lg text-white px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+                className="mt-2 block w-full text-lg text-white px-4 py-3  border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
               />
             </label>
           </div>
@@ -247,7 +301,7 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
             type="submit"
             className="w-full bg-indigo-600 text-white py-3 px-6 text-lg rounded-md shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            Add Unit
+            Add Previous Paper
           </button>
         </form>
       </div>
@@ -255,4 +309,4 @@ const SSCPreviousPaperForms = ({ collectionName }) => {
   );
 };
 
-export default SSCPreviousPaperForms;
+export default SSCForms;

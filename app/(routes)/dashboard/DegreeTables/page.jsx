@@ -1,8 +1,10 @@
 "use client";
 
 import { db } from "@/app/FirebaseConfig"; // Import your Firebase config
+import ItemContext from "@/app/ItemContext";
 import { collection, getDocs } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState, useContext } from "react";
 import { HashLoader } from "react-spinners"; // For loading spinner
 
 // Group by function
@@ -16,10 +18,17 @@ const groupBy = (array, key) => {
 };
 
 const DegreeTables = ({ collectionName }) => {
+  const {
+    setUniversityId,
+    setCourseId,
+    setSemesterId,
+    setSubjectId,
+    setUnitId,
+  } = useContext(ItemContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true); // For loading state
   const [error, setError] = useState(null); // For error handling
-
+  const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -79,12 +88,18 @@ const DegreeTables = ({ collectionName }) => {
                 const unitsSnapshot = await getDocs(unitsRef);
 
                 unitsSnapshot.docs.forEach((unitDoc) => {
+                  const unitId = unitDoc.id;
                   const unitData = unitDoc.data();
                   degreeData.push({
                     name,
                     courseName,
                     semesterName,
                     subjectName,
+                    unitId,
+                    subjectId,
+                    courseId,
+                    semesterId,
+                    universityId,
                     unitName: unitData.unitName || "N/A",
                     unitNumber: unitData.unitNumber || "N/A",
                     unitImageUrl: unitData.unitImageUrl || null,
@@ -111,6 +126,36 @@ const DegreeTables = ({ collectionName }) => {
 
     fetchData();
   }, []);
+
+  const handleAddQuiz = (
+    unitId,
+    universityId,
+    courseId,
+    subjectId,
+    semesterId
+  ) => {
+    setUnitId(unitId);
+    setSubjectId(subjectId);
+    setSemesterId(semesterId);
+    setUniversityId(universityId);
+    setCourseId(courseId);
+    router.push("/dashboard/DegreeQuiz");
+  };
+
+  const handleViewQuiz = (
+    unitId,
+    universityId,
+    courseId,
+    subjectId,
+    semesterId
+  ) => {
+    setUnitId(unitId);
+    setSubjectId(subjectId);
+    setSemesterId(semesterId);
+    setUniversityId(universityId);
+    setCourseId(courseId);
+    router.push("/dashboard/DegreeQuizList");
+  };
 
   if (loading) {
     return (
@@ -170,6 +215,9 @@ const DegreeTables = ({ collectionName }) => {
                   <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
                     Unit PDF
                   </th>
+                  <th className="border border-gray-300 px-4 py-2 font-semibold text-gray-700">
+                    Quizzes
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -225,6 +273,36 @@ const DegreeTables = ({ collectionName }) => {
                       ) : (
                         "No PDF available"
                       )}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-3"
+                        onClick={() =>
+                          handleAddQuiz(
+                            item.unitId,
+                            item.universityId,
+                            item.courseId,
+                            item.subjectId,
+                            item.semesterId
+                          )
+                        }
+                      >
+                        Add Quiz
+                      </button>
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-3"
+                        onClick={() =>
+                          handleViewQuiz(
+                            item.unitId,
+                            item.universityId,
+                            item.courseId,
+                            item.subjectId,
+                            item.semesterId
+                          )
+                        }
+                      >
+                        View Quiz
+                      </button>
                     </td>
                   </tr>
                 ))}
