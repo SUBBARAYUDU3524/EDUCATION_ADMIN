@@ -256,7 +256,10 @@ const AddQuiz = () => {
         `QUIZ_USERS/${currentUserId}/quizzes`,
         quizNumber // Use the correct quiz number here
       );
-      await updateDoc(userQuizDocRef, { questions: quizData.questions });
+      await updateDoc(userQuizDocRef, {
+        questions: quizData.questions,
+        quizTitle: quizData.quizTitle,
+      });
 
       setLoading(false);
       toast.success("Quiz saved successfully!");

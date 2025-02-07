@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { HashLoader } from "react-spinners"; // For loading spinner
 
 const IntermediateTables = ({ collectionName }) => {
-  const { setUnitId, setYearId, setCourseId, setSubjectId } =
+  const { setUnitId, setYearId, setClassId, setCourseId, setSubjectId } =
     useContext(ItemContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,6 +106,29 @@ const IntermediateTables = ({ collectionName }) => {
     setSubjectId(subjectId);
     setCourseId(courseId);
     router.push("/dashboard/interQuizList");
+  };
+
+  const handlePlayQuiz = (yearId, unitId, courseId, subjectId) => {
+    // Console log to ensure values are correctly passed
+    console.log(
+      "unitId:",
+      unitId,
+      "courseId:",
+      courseId,
+      "subjectId:",
+      subjectId,
+      "yearId:",
+      yearId
+    );
+
+    // Set the context or state values
+    setYearId(yearId);
+    setCourseId(courseId);
+    setSubjectId(subjectId);
+    setUnitId(unitId);
+
+    // Navigate to the quiz page
+    router.push("/dashboard/InterQuizzes");
   };
 
   if (loading) {
@@ -251,6 +274,20 @@ const IntermediateTables = ({ collectionName }) => {
                       }
                     >
                       View Quiz
+                    </button>
+
+                    <button
+                      className="bg-blue-500  text-white px-4 py-2 rounded hover:bg-blue-600 ml-3"
+                      onClick={() =>
+                        handlePlayQuiz(
+                          item.unitId,
+                          courses[courseIndex].courseId, // Pass courseId from course data
+                          item.subjectId, // Pass subjectId from item data
+                          year // subjectId exists in the item
+                        )
+                      }
+                    >
+                      Quiz
                     </button>
                   </td>
                 </tr>

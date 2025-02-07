@@ -536,6 +536,31 @@ const SideNav = () => {
         },
       ],
     },
+    {
+      id: 14,
+      name: "DaysSpecification",
+      icon: openMenu === 14 ? <FaChevronUp /> : <FaChevronDown />,
+      children: [
+        {
+          id: 14.1,
+          name: "Today Specification",
+          path: "/dashboard/DaySpecification",
+          icon: <FaBookReader />,
+        },
+        {
+          id: 14.2,
+          name: "Days Specification Form",
+          path: "/dashboard/DaysNotificationForm",
+          icon: <FaStreetView />,
+        },
+        {
+          id: 13.3,
+          name: "Days Specification Table",
+          path: "/dashboard/DaysNotificationTable",
+          icon: <FaGraduationCap />,
+        },
+      ],
+    },
   ];
 
   return (

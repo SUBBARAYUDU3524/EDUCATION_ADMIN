@@ -239,7 +239,7 @@ const BTechForms = ({ collectionname }) => {
           </div>
         )}
         <h2 className="text-2xl font-bold mb-4">Add Group</h2>
-        <form onSubmit={handleYearSubmit} className="space-y-4 mb-6">
+        <form onSubmit={handleYearSubmit} className="space-y-4 mb-6 my-10">
           <div>
             <label className="block text-sm font-medium text-white">
               Group:

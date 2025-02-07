@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore"; // Firestore
 import { getStorage } from "firebase/storage"; // Firebase Storage
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCkggt-c1rP7gXZpy1E4ZMYEOSxgSdkAsE",
-  authDomain: "brainbeauty-97662.firebaseapp.com",
-  projectId: "brainbeauty-97662",
-  storageBucket: "brainbeauty-97662.appspot.com",
-  messagingSenderId: "668072198189",
-  appId: "1:668072198189:web:fb1ac8f89622fb94bcf8a4",
-  measurementId: "G-T0FKFQN8JH",
+  apiKey: "AIzaSyDnwP60QGNCcdPTdjbCky89Z5mxBNFs0gE",
+  authDomain: "jnanasutra-91161.firebaseapp.com",
+  projectId: "jnanasutra-91161",
+  storageBucket: "jnanasutra-91161.firebasestorage.app",
+  messagingSenderId: "220201658638",
+  appId: "1:220201658638:web:565cbc88412eb9ee134f5f",
+  measurementId: "G-06GPF4XZ33",
 };
 
 const app = initializeApp(firebaseConfig);

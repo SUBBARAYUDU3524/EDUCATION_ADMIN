@@ -1,8 +1,8 @@
 "use client";
 import { useEffect } from "react";
-import useAuth from "../hooks/UseAuth";
 import { useRouter } from "next/navigation";
 import { ClipLoader } from "react-spinners"; // Import ClipLoader for circular spinner
+import useAuth from "../hooks/UseAuth";
 
 const AuthGuard = ({ children }) => {
   const { user, loading } = useAuth();
